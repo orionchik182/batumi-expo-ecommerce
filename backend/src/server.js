@@ -1,7 +1,7 @@
 import express from "express";
 import { ENV } from "./config/env.js";
 import path from "path";
-import { clerkMiddleware } from '@clerk/express'
+import { clerkMiddleware } from "@clerk/express";
 
 import { connectDB } from "./config/db.js";
 
@@ -24,7 +24,11 @@ if (ENV.NODE_ENV === "production") {
   });
 }
 
-app.listen(ENV.PORT, () => {
-  console.log("Server is up and running");
-  connectDB();
-});
+const startServer = async () => {
+  await connectDB();
+  app.listen(ENV.PORT, () => {
+    console.log(`Server is up and running on port ${ENV.PORT}`);
+  });
+};
+
+startServer();
