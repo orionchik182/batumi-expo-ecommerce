@@ -12,7 +12,6 @@ const app = express();
 const __dirname = path.resolve();
 
 app.use(express.json());
-app.use(clerkMiddleware()); // adds auth object under the req => req.auth
 
 app.use(
   "/api/inngest",
@@ -21,6 +20,8 @@ app.use(
     functions,
   }),
 );
+
+app.use(clerkMiddleware()); // adds auth object under the req => req.auth
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Success" });

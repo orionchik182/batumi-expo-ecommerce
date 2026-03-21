@@ -3,14 +3,14 @@ import { connectDB } from "./db.js";
 import { User } from "../models/user.model.js";
 
 export const inngest = new Inngest({
-  id: "ecommerce-app",
+  id: "my-ecommerce-app",
 });
 
 const syncUser = inngest.createFunction(
   {
-    id: "sync-user",
+    id: "sync-user-fn",
+    triggers: [{ event: "clerk/user.created" }],
   },
-  { event: "clerk/user.created" },
   async ({ event }) => {
     await connectDB();
     const { id, email_addresses, first_name, last_name, image_url } =
@@ -28,17 +28,18 @@ const syncUser = inngest.createFunction(
   },
 );
 
+console.log("Sync user function created");
 
 const deleteUserFromDB = inngest.createFunction(
   {
-    id: "delete-user-from-db",
+    id: "delete-user-fn",
+    triggers: [{ event: "clerk/user.deleted" }],
   },
-  {event: "clerk/user.deleted"},
-  async ({event})=>{
+  async ({ event }) => {
     await connectDB();
-    const {id} = event.data;
-    await User.deleteOne({clerkId: id});
-  }
+    const { id } = event.data;
+    await User.deleteOne({ clerkId: id });
+  },
 );
 
 export const functions = [syncUser, deleteUserFromDB];
