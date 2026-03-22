@@ -17,36 +17,49 @@ app.post(
   "/api/webhooks/clerk",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    const SIGNING_SECRET = ENV.CLERK_WEBHOOK_SECRET;
-
-    if (!SIGNING_SECRET) {
-      console.error("Ошибка: Нет CLERK_WEBHOOK_SECRET в .env");
-      return res.status(500).send("Server Error");
-    }
-
-    const wh = new Webhook(SIGNING_SECRET);
-    const payload = req.body.toString();
-    const headers = req.headers;
-
-    let evt;
     try {
-      evt = wh.verify(payload, headers);
-    } catch (err) {
-      console.error("Ошибка верификации вебхука:", err.message);
-      return res.status(400).json({ success: false });
+      const SIGNING_SECRET = ENV.CLERK_WEBHOOK_SECRET;
+
+      if (!SIGNING_SECRET) {
+        console.error("Ошибка: Нет CLERK_WEBHOOK_SECRET");
+        return res.status(500).json({ error: "Missing secret" });
+      }
+
+      const wh = new Webhook(SIGNING_SECRET);
+      const payload = req.body.toString();
+      const headers = req.headers;
+
+      let evt;
+      try {
+        evt = wh.verify(payload, headers);
+      } catch (err) {
+        console.error("Ошибка верификации вебхука:", err.message);
+        return res.status(400).json({ error: "Verification failed" });
+      }
+
+      const eventType = evt.type;
+      console.log(`Успешно получен вебхук от Clerk: ${eventType}`);
+
+      if (eventType === "user.created" || eventType === "user.deleted") {
+        try {
+          console.log("Отправляем событие в Inngest...");
+          await inngest.send({
+            name: `clerk/${eventType}`,
+            data: evt.data,
+          });
+          console.log("Событие успешно отправлено в Inngest!");
+        } catch (inngestErr) {
+          console.error("КРИТИЧЕСКАЯ ОШИБКА INNGEST:", inngestErr.message);
+          return res.status(500).json({ error: "Inngest send failed" });
+        }
+      }
+
+      res.status(200).json({ success: true });
+    } catch (globalError) {
+      console.error("Неизвестная ошибка в вебхуке:", globalError);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const eventType = evt.type;
-
-    if (eventType === "user.created" || eventType === "user.deleted") {
-      await inngest.send({
-        name: `clerk/${eventType}`,
-        data: evt.data,
-      });
-    }
-
-    res.status(200).json({ success: true });
-  },
+  }
 );
 
 // === 2. БАЗОВЫЕ НАСТРОЙКИ ===
