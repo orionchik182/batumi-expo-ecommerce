@@ -59,7 +59,7 @@ app.post(
       console.error("Неизвестная ошибка в вебхуке:", globalError);
       res.status(500).json({ error: "Internal Server Error" });
     }
-  }
+  },
 );
 
 // === 2. БАЗОВЫЕ НАСТРОЙКИ ===
@@ -86,7 +86,7 @@ app.get("/api/health", (req, res) => {
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../admin/dist")));
 
-  app.get("*", (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.resolve(__dirname, "../admin/dist", "index.html"));
   });
 }
@@ -96,7 +96,7 @@ const startServer = async () => {
   await connectDB();
 
   // 0.0.0.0 необходим для работы в Docker-контейнерах на Sevalla
-  app.listen(ENV.PORT, () => {
+  app.listen(ENV.PORT, "0.0.0.0", () => {
     console.log(`Server is up and running on port ${ENV.PORT}`);
   });
 };
