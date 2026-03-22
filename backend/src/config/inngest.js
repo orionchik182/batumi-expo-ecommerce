@@ -28,8 +28,6 @@ const syncUser = inngest.createFunction(
   },
 );
 
-console.log("Sync user function created");
-
 const deleteUserFromDB = inngest.createFunction(
   {
     id: "delete-user-fn",
