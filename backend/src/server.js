@@ -82,14 +82,14 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Success" });
 });
 
-// // === 6. РАЗДАЧА ФРОНТЕНДА (Оставил правильный путь на будущее) ===
-// if (ENV.NODE_ENV === "production") {
-//   app.use(express.static(path.join(__dirname, "../admin/dist")));
+// === 6. РАЗДАЧА ФРОНТЕНДА (Оставил правильный путь на будущее) ===
+if (ENV.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../admin/dist")));
 
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "../admin/dist", "index.html"));
-//   });
-// }
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../admin/dist", "index.html"));
+  });
+}
 
 // === 7. ЗАПУСК СЕРВЕРА ===
 const startServer = async () => {
