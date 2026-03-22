@@ -82,10 +82,6 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Success" });
 });
 
-app.get("/", (req, res) => {
-  res.send("Backend API is running!");
-});
-
 // // === 6. РАЗДАЧА ФРОНТЕНДА (Оставил правильный путь на будущее) ===
 // if (ENV.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "../admin/dist")));
@@ -100,7 +96,7 @@ const startServer = async () => {
   await connectDB();
 
   // 0.0.0.0 необходим для работы в Docker-контейнерах на Sevalla
-  app.listen(ENV.PORT, "0.0.0.0", () => {
+  app.listen(ENV.PORT, () => {
     console.log(`Server is up and running on port ${ENV.PORT}`);
   });
 };
