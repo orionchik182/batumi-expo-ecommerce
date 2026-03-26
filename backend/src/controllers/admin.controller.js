@@ -65,7 +65,7 @@ export async function updateProduct(req, res) {
     }
     if (name) product.name = name;
     if (description) product.description = description;
-    if (price) product.price = parseFloat(price);
+    if (price !== undefined) product.price = parseFloat(price);
     if (category) product.category = category;
     if (stock !== undefined) product.stock = parseInt(stock);
 
@@ -124,7 +124,7 @@ export async function updateOrderStatus(req, res) {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    if (!["pending", "shipped", "delivered"].includes(status)) {
+    if (!["pending", "shipped", "delivered", "cancelled"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
     const order = await Order.findById(orderId);
@@ -137,6 +137,12 @@ export async function updateOrderStatus(req, res) {
     }
     if (status === "shipped" && !order.shippedAt) {
       order.shippedAt = Date.now();
+    }
+    if (status === "cancelled" && !order.cancelledAt) {
+      order.cancelledAt = Date.now();
+    }
+    if (status === "pending" && !order.paidAt) {
+      order.paidAt = Date.now();
     }
     await order.save();
     res
@@ -155,7 +161,7 @@ export async function getDashboardStats(_, res) {
       {
         $group: {
           _id: null,
-          total: { $sum: "totalPrice" },
+          total: { $sum: "$totalPrice" },
         },
       },
     ]);

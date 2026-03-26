@@ -74,7 +74,14 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    orderItems: [orderItemSchema],
+    orderItems: {
+      type: [orderItemSchema],
+      required: true,
+      validate: {
+        validator: (v) => Array.isArray(v) && v.length > 0,
+        message: "Order must contain at least one item",
+      },
+    },
     shippingAddress: {
       type: shippingAddressSchema,
       required: true,
@@ -97,6 +104,12 @@ const orderSchema = new mongoose.Schema(
       type: Date,
     },
     paidAt: {
+      type: Date,
+    },
+    shippedAt: {
+      type: Date,
+    },
+    cancelledAt: {
       type: Date,
     },
   },
