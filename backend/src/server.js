@@ -1,12 +1,14 @@
 import express from "express";
-import { ENV } from "./config/env.js";
 import path from "path";
 import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
 import { functions, inngest } from "./config/inngest.js";
 import { Webhook } from "svix";
 
+import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
+
+import adminRoutes from "./routes/admin.route.js";
 
 const app = express();
 
@@ -73,6 +75,8 @@ app.use(
     functions,
   }),
 );
+
+app.use("/api/admin", adminRoutes);
 
 // === 4. CLERK ===
 app.use(clerkMiddleware());
