@@ -6,11 +6,16 @@ export async function addAddress(req, res) {
       streetAddress,
       city,
       state,
+      country,
       zipCode,
       phoneNumber,
       isDefault,
     } = req.body;
     const user = req.user;
+
+    if (!label || !fullName || !streetAddress || !city || !state || !country || !zipCode || !phoneNumber) {
+      return res.status(400).json({ error: "Missing required address fields" });
+    }
 
     // if this is set as default, unset all other default addresses
     if (isDefault) {
@@ -24,6 +29,7 @@ export async function addAddress(req, res) {
       fullName,
       streetAddress,
       city,
+      country,
       state,
       zipCode,
       phoneNumber,
@@ -64,12 +70,18 @@ export async function updateAddress(req, res) {
       fullName,
       streetAddress,
       city,
+      country,
       state,
       zipCode,
       phoneNumber,
       isDefault,
     } = req.body;
     const user = req.user;
+
+    const address = user.addresses.id(addressId);
+    if (!address) {
+      return res.status(404).json({ error: "Address not found" });
+   }
 
     // if this is set as default, unset all other default addresses
     if (isDefault) {
@@ -82,14 +94,15 @@ export async function updateAddress(req, res) {
     address.fullName = fullName || address.fullName;
     address.streetAddress = streetAddress || address.streetAddress;
     address.city = city || address.city;
+    address.country = country || address.country;
     address.state = state || address.state;
     address.zipCode = zipCode || address.zipCode;
     address.phoneNumber = phoneNumber || address.phoneNumber;
     address.isDefault = isDefault || address.isDefault;
 
     await user.save();
-    return res.status(201).json({
-      message: "Address added successfully",
+    return res.status(200).json({
+      message: "Address updated successfully",
       addresses: user.addresses,
     });
   } catch (error) {
@@ -122,8 +135,11 @@ export async function addToWishlist(req, res) {
     const { productId } = req.body;
     const user = req.user;
 
-    if (user.wishlist.includes(productId)) {
-      return res.status(400).json({ message: "Product already in wishlist" });
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+    if (user.wishlist.some((id) => id.toString() === productId)) {
+      return res.status(400).json({ error: "Product already in wishlist" });
     }
     user.wishlist.push(productId);
     await user.save();
@@ -141,7 +157,8 @@ export async function addToWishlist(req, res) {
 
 export async function getWishlist(req, res) {
     try {
-        const user = req.user;
+        //we're using populate, bc wishlist is an array of product IDs
+        const user = await User.findById(req.user._id).populate("wishlist");
         return res.status(200).json({
             message: "Wishlist fetched successfully",
             wishlist: user.wishlist,
@@ -157,7 +174,7 @@ export async function removeFromWishlist(req, res) {
         const { productId } = req.params;
         const user = req.user;
 
-        if(!user.wishlist.includes(productId)) {
+        if (!user.wishlist.some((id) => id.toString() === productId)) {
             return res.status(400).json({ message: "Product not found in wishlist" });
         }
         
