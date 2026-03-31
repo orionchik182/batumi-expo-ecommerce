@@ -10,6 +10,7 @@ import { connectDB } from "./config/db.js";
 
 import adminRoutes from "./routes/admin.route.js";
 import userRoutes from "./routes/user.route.js";
+import orderRoutes from "./routes/order.route.js";
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use(
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/orders", orderRoutes);
 
 // === 4. CLERK ===
 app.use(clerkMiddleware());
