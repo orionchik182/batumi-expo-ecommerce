@@ -1,6 +1,6 @@
-import { Order } from "../models/order.model";
-import { Product } from "../models/product.model";
-import { Review } from "../models/review.model";
+import { Order } from "../models/order.model.js";
+import { Product } from "../models/product.model.js";
+import { Review } from "../models/review.model.js";
 
 export async function createReview(req, res) {
   try {
@@ -46,7 +46,7 @@ export async function createReview(req, res) {
     const existingReview = await Review.findOne({
       productId: productId.toString(),
       orderId: orderId.toString(),
-      user: user._id.toString(),
+      userId: user._id.toString(),
     });
 
     if (existingReview) {
@@ -63,13 +63,22 @@ export async function createReview(req, res) {
     });
 
     // update product rating
-    const product = await Product.findById(productId);
+    
     const reviews = await Review.find({ productId: productId.toString() });
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-    product.averageRating = totalRating / reviews.length;
-    product.totalReviews = reviews.length;
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      {
+        averageRating: totalRating / reviews.length,
+        totalReviews: reviews.length,
+      },
+      { new: true, runValidators: true },
+    );
 
-    await product.save();
+    if (!updatedProduct) {
+      await Review.findByIdAndDelete(review._id);
+      return res.status(404).json({ message: "Product not found" });
+    }
 
     return res.status(201).json({
       message: "Review created successfully",
@@ -101,9 +110,15 @@ export async function deleteReview(req, res) {
 
     // update product rating
     const product = await Product.findById(review.productId);
-    const reviews = await Review.find({ productId: review.productId.toString() });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    const reviews = await Review.find({
+      productId: review.productId.toString(),
+    });
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-    product.averageRating = totalRating / reviews.length;
+    product.averageRating =
+      reviews.length > 0 ? totalRating / reviews.length : 0;
     product.totalReviews = reviews.length;
 
     await product.save();
