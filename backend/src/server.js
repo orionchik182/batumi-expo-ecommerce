@@ -85,7 +85,7 @@ app.use(
   }),
 );
 
-app.use(cors({origin: "http://localhost:5173"}));
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);

@@ -15,6 +15,7 @@ export const ENV = {
     INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
     CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    CLIENT_URL: process.env.CLIENT_URL,
     
 }
 
