@@ -1,9 +1,11 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
 import { functions, inngest } from "./config/inngest.js";
 import { Webhook } from "svix";
+import cors from "cors";
 
 import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
@@ -13,10 +15,13 @@ import userRoutes from "./routes/user.route.js";
 import orderRoutes from "./routes/order.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import productRoutes from "./routes/product.route.js";
+import cartRoutes from "./routes/cart.route.js";
 
 const app = express();
 
 const __dirname = path.resolve();
+
+console.log("DB_URL:", ENV.DB_URL);
 
 // === 1. ВЕБХУК CLERK ===
 app.post(
@@ -80,11 +85,14 @@ app.use(
   }),
 );
 
+app.use(cors({origin: "http://localhost:5173"}));
+
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 // === 4. CLERK ===
 app.use(clerkMiddleware());
