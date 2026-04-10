@@ -9,10 +9,12 @@ import OrdersPage from "./pages/OrdersPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 import PageLoader from "./components/PageLoader";
+import { useAxiosAuth } from "./hooks/useAxiosAuth";
 
 
 
 function App() {
+  useAxiosAuth();
 
   const { isSignedIn, isLoaded } = useAuth();
 
