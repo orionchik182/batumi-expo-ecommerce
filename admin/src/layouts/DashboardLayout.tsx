@@ -7,7 +7,7 @@ function DashboardLayout() {
   return (
     <div>
         <div className="drawer lg:drawer-open">
-            <input type="checkbox" className="drawer-toggle" id="my-drawer" defaultChecked/>
+            <input type="checkbox" className="drawer-toggle" id="my-drawer"/>
             <div className="drawer-content">
                 <Navbar />
                 <main className="p-6">

@@ -9,41 +9,64 @@ import {
 import { capitalizeText, formatDate, getOrderStatusBadge } from "../lib/utils.ts";
 
 const DashboardPage = () => {
-  const { data: ordersData, isLoading: ordersLoading } = useQuery({
+  const { data: ordersData, isLoading: ordersLoading, isError: ordersError, error: ordersErrorData } = useQuery({
     queryKey: ["orders"],
     queryFn: () => orderApi.getAll(),
   });
-  const { data: statsData, isLoading: statsLoading } = useQuery({
+  const { data: statsData, isLoading: statsLoading, isError: statsError, error: statsErrorData } = useQuery({
     queryKey: ["stats"],
     queryFn: () => statsApi.getDashboard(),
   });
 
-  const recentOrders = ordersData?.orders.slice(0, 5) || [];
+  const recentOrders = ordersData?.orders?.slice(0, 5) || [];
 
   const statsCards = [
     {
       name: "Total Revenue",
       value: statsLoading
         ? "..."
-        : `$${statsData?.totalRevenue.toFixed(2) || 0}`,
+        : statsError
+        ? "Error"
+        : `$${statsData?.totalRevenue?.toFixed(2) || 0}`,
       icon: <DollarSignIcon className="size-8" />,
     },
     {
       name: "Total Orders",
-      value: statsLoading ? "..." : `${statsData?.totalOrders || 0}`,
+      value: statsLoading
+        ? "..."
+        : statsError
+        ? "Error"
+        : `${statsData?.totalOrders || 0}`,
       icon: <ShoppingCartIcon className="size-8" />,
     },
     {
       name: "Total Customers",
-      value: statsLoading ? "..." : `${statsData?.totalCustomers || 0}`,
+      value: statsLoading
+        ? "..."
+        : statsError
+        ? "Error"
+        : `${statsData?.totalCustomers || 0}`,
       icon: <UsersIcon className="size-8" />,
     },
     {
       name: "Total Products",
-      value: statsLoading ? "..." : `${statsData?.totalProducts || 0}`,
+      value: statsLoading
+        ? "..."
+        : statsError
+        ? "Error"
+        : `${statsData?.totalProducts || 0}`,
       icon: <PackageIcon className="size-8" />,
     },
   ];
+
+  if (statsError && ordersError) {
+  return (
+    <div className="text-error">
+      Failed to load dashboard data
+    </div>
+  );
+}
+
   return (
     <div className="stats stats-vertical lg:stats-horizontal shadow bg-base-100 w-full">
       {statsCards.map((stat) => (
@@ -61,6 +84,8 @@ const DashboardPage = () => {
             <div className="flex justify-center py-8">
               <span className="loading loading-spinner loading-lg" />
             </div>
+          ) : ordersError ? (
+            <div className="card-title">Error fetching orders: {ordersErrorData?.message}</div>
           ) : recentOrders.length === 0 ? (
             <div className="card-title">No recent orders</div>
           ) : (
@@ -106,7 +131,7 @@ const DashboardPage = () => {
                       </td>
                       <td>
                         <div
-                          className={`bagde ${getOrderStatusBadge(order.status)}`}
+                          className={`badge ${getOrderStatusBadge(order.status)}`}
                         >
                           {capitalizeText(order.status)}
                         </div>
