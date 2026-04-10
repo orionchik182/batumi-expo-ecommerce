@@ -21,8 +21,6 @@ const app = express();
 
 const __dirname = path.resolve();
 
-console.log("DB_URL:", ENV.DB_URL);
-
 // === 1. ВЕБХУК CLERK ===
 app.post(
   "/api/webhooks/clerk",
@@ -84,6 +82,8 @@ app.use(
     functions,
   }),
 );
+// === 4. CLERK ===
+app.use(clerkMiddleware());
 
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 
@@ -93,9 +93,6 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
-
-// === 4. CLERK ===
-app.use(clerkMiddleware());
 
 // === 5. МАРШРУТЫ ПРОВЕРКИ ЗДОРОВЬЯ ===
 app.get("/api/health", (req, res) => {
