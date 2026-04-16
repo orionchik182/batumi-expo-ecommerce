@@ -30,7 +30,8 @@ export function useProductForm() {
     setImageItems([]);
   }, [imageItems]);
 
-  const { deleteMutation, createMutation, updateMutation } = useProductMutations(closeModal);
+  const { deleteMutation, createMutation, updateMutation } =
+    useProductMutations(closeModal);
 
   const openEditModal = useCallback((product: Product) => {
     setEditingProduct(product);
@@ -81,15 +82,13 @@ export function useProductForm() {
   };
 
   const handleRemoveImage = (id: string) => {
-    setImageItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!editingProduct && imageItems.length === 0) {
-      alert("Please upload at least one image");
-      return;
-    }
+    setImageItems((prev) => {
+      const itemToRemove = prev.find((item) => item.id === id);
+      if (itemToRemove?.url.startsWith("blob:")) {
+        URL.revokeObjectURL(itemToRemove.url);
+      }
+      return prev.filter((item) => item.id !== id);
+    });
   };
 
   const handleDeleteProduct = useCallback(
@@ -98,7 +97,7 @@ export function useProductForm() {
         deleteMutation.mutate(id);
       }
     },
-    [deleteMutation.mutate],
+    [deleteMutation],
   );
 
   const onPageSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -134,8 +133,9 @@ export function useProductForm() {
     handleDeleteProduct,
     onPageSubmit,
     handleRemoveImage,
-    handleSubmit,
     isPending: createMutation.isPending || updateMutation.isPending,
-    isDeleting: deleteMutation.isPending,
+    deletingProductId: deleteMutation.isPending
+      ? deleteMutation.variables
+      : null,
   };
 }

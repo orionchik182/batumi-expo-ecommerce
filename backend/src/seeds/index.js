@@ -148,16 +148,26 @@ const products = [
 const seedDatabase = async () => {
   try {
     // Connect to MongoDB
+    if (!ENV.DB_URL) {
+      throw new Error("DB_URL is required to run product seeding.");
+    }
+    const shouldReset = process.env.RESET_PRODUCTS === "true";
     await mongoose.connect(ENV.DB_URL);
     console.log("✅ Connected to MongoDB");
 
-    // Clear existing products
-    await Product.deleteMany({});
-    console.log("🗑️  Cleared existing products");
+    if (shouldReset) {
+      await Product.deleteMany({});
+      console.log("🗑️  Cleared existing products");
+    }
 
-    // Insert seed products
-    await Product.insertMany(products);
-    console.log(`✅ Successfully seeded ${products.length} products`);
+    for (const product of products) {
+      await Product.findOneAndUpdate(
+        { name: product.name }, // preferably a stable unique key (e.g., slug)
+        { $set: product },
+        { upsert: true, runValidators: true },
+      );
+    }
+    console.log(`✅ Successfully upserted ${products.length} products`);
 
     // Display summary
     const categories = [...new Set(products.map((p) => p.category))];

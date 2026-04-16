@@ -57,12 +57,24 @@ export async function getAllProducts(_, res) {
 export async function updateProduct(req, res) {
   try {
     const { id } = req.params;
-    const { name, description, price, category, stock, existingImages, imagePositions } = req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      stock,
+      existingImages,
+      imagePositions,
+    } = req.body;
 
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    // Сохраняем старый список картинок для сравнения
+    const oldImages = product.images || [];
+
     if (name) product.name = name;
     if (description) product.description = description;
     if (price !== undefined) product.price = parseFloat(price);
@@ -71,12 +83,31 @@ export async function updateProduct(req, res) {
 
     let existingImagesArr = [];
     if (existingImages) {
-      existingImagesArr = Array.isArray(existingImages) ? [...existingImages] : [existingImages];
+      existingImagesArr = Array.isArray(existingImages)
+        ? [...existingImages]
+        : [existingImages];
     }
-    
+
+    // --- ЛОГИКА ОПРЕДЕЛЕНИЯ УДАЛЕННЫХ КАРТИНОК ---
+    // Находим картинки, которые были в продукте, но не пришли в существующем списке (их удалил пользователь)
+    const imagesToDelete = oldImages.filter(
+      (img) => !existingImagesArr.includes(img),
+    );
+
+    // Удаляем неиспользуемые файлы из Cloudinary
+    if (imagesToDelete.length > 0) {
+      const deletePromises = imagesToDelete.map((imageUrl) => {
+        const publicId = imageUrl.split("/").pop().split(".")[0];
+        return cloudinary.uploader.destroy(`products/${publicId}`);
+      });
+      await Promise.all(deletePromises);
+    }
+
     let positionsArr = [];
     if (imagePositions) {
-      positionsArr = Array.isArray(imagePositions) ? [...imagePositions] : [imagePositions];
+      positionsArr = Array.isArray(imagePositions)
+        ? [...imagePositions]
+        : [imagePositions];
     }
 
     let finalImages = [];
@@ -110,18 +141,9 @@ export async function updateProduct(req, res) {
         finalImages = [...existingImagesArr, ...newImageUrls];
       }
     } else {
-      if (positionsArr.length > 0) {
-        let eIdx = 0;
-        for (const pos of positionsArr) {
-          if (pos === "existing" && eIdx < existingImagesArr.length) {
-            finalImages.push(existingImagesArr[eIdx++]);
-          }
-        }
-      } else {
-        finalImages = existingImagesArr;
-      }
+      finalImages = existingImagesArr;
     }
-    
+
     product.images = finalImages;
     await product.save();
     res.status(200).json({ message: "Product updated successfully", product });
@@ -136,6 +158,13 @@ export async function deleteProduct(req, res) {
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
+    }
+    if (product.images && product.images.length > 0) {
+      const deletePromises = product.images.map((imageUrl) => {
+        const publicId = imageUrl.split("/").pop().split(".")[0];
+        return cloudinary.uploader.destroy(`products/${publicId}`);
+      });
+      await Promise.all(deletePromises);
     }
     await product.deleteOne();
     res.status(200).json({ message: "Product deleted successfully" });
@@ -207,15 +236,13 @@ export async function getDashboardStats(_, res) {
     const totalProducts = await Product.countDocuments();
     const totalCustomers = await User.countDocuments();
 
-    res
-      .status(200)
-      .json({
-        message: "Dashboard stats fetched successfully",
-        totalOrders,
-        totalRevenue,
-        totalProducts,
-        totalCustomers,
-      });
+    res.status(200).json({
+      message: "Dashboard stats fetched successfully",
+      totalOrders,
+      totalRevenue,
+      totalProducts,
+      totalCustomers,
+    });
   } catch (error) {
     console.error("Error in getDashboardStats controller:", error);
     res.status(500).json({ message: "Internal server error" });

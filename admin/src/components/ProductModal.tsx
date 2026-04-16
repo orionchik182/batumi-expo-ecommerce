@@ -75,6 +75,7 @@ function ProductModal(props: ReturnType<typeof useProductForm>) {
                 <option value="Accessories">Accessories</option>
                 <option value="Fashion">Fashion</option>
                 <option value="Sports">Sports</option>
+                <option value="Books">Books</option>
               </select>
             </div>
           </div>
@@ -145,7 +146,7 @@ function ProductModal(props: ReturnType<typeof useProductForm>) {
                 className="file-input file-input-bordered file-input-primary w-full"
                 required={!editingProduct && imageItems.length === 0}
               />
-              {editingProduct && (
+              {imageItems.length > 1 && (
                 <p className="text-xs text-base-content/60 mt-2 text-center">
                   Drag and drop to reorder. First picture will be the main one.
                 </p>

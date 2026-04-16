@@ -21,7 +21,13 @@ export const ProductItem = memo(
           <div className="flex items-center gap-6">
             <div className="avatar">
               <div className="w-20 rounded-xl">
-                <img src={product.images[0]} alt={product.name} />
+                {product?.images?.length > 0 ? (
+                  <img src={product?.images[0]} alt={product?.name} />
+                ) : (
+                  <div className="w-full h-full bg-base-200 flex items-center justify-center">
+                    <span className="text-base-content/50">No Image</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex-1">

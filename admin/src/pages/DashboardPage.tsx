@@ -6,14 +6,28 @@ import {
   ShoppingCartIcon,
   UsersIcon,
 } from "lucide-react";
-import { capitalizeText, formatDate, getOrderStatusBadge } from "../lib/utils.ts";
+import {
+  capitalizeText,
+  formatDate,
+  getOrderStatusBadge,
+} from "../lib/utils.ts";
 
 const DashboardPage = () => {
-  const { data: ordersData, isLoading: ordersLoading, isError: ordersError, error: ordersErrorData } = useQuery({
+  const {
+    data: ordersData,
+    isLoading: ordersLoading,
+    isError: ordersError,
+    error: ordersErrorData,
+  } = useQuery({
     queryKey: ["orders"],
     queryFn: () => orderApi.getAll(),
   });
-  const { data: statsData, isLoading: statsLoading, isError: statsError, error: statsErrorData } = useQuery({
+  const {
+    data: statsData,
+    isLoading: statsLoading,
+    isError: statsError,
+    error: statsErrorData,
+  } = useQuery({
     queryKey: ["stats"],
     queryFn: () => statsApi.getDashboard(),
   });
@@ -26,8 +40,8 @@ const DashboardPage = () => {
       value: statsLoading
         ? "..."
         : statsError
-        ? "Error"
-        : `$${statsData?.totalRevenue?.toFixed(2) || 0}`,
+          ? "Error"
+          : `$${statsData?.totalRevenue?.toFixed(2) || 0}`,
       icon: <DollarSignIcon className="size-8" />,
     },
     {
@@ -35,8 +49,8 @@ const DashboardPage = () => {
       value: statsLoading
         ? "..."
         : statsError
-        ? "Error"
-        : `${statsData?.totalOrders || 0}`,
+          ? "Error"
+          : `${statsData?.totalOrders || 0}`,
       icon: <ShoppingCartIcon className="size-8" />,
     },
     {
@@ -44,8 +58,8 @@ const DashboardPage = () => {
       value: statsLoading
         ? "..."
         : statsError
-        ? "Error"
-        : `${statsData?.totalCustomers || 0}`,
+          ? "Error"
+          : `${statsData?.totalCustomers || 0}`,
       icon: <UsersIcon className="size-8" />,
     },
     {
@@ -53,28 +67,15 @@ const DashboardPage = () => {
       value: statsLoading
         ? "..."
         : statsError
-        ? "Error"
-        : `${statsData?.totalProducts || 0}`,
+          ? "Error"
+          : `${statsData?.totalProducts || 0}`,
       icon: <PackageIcon className="size-8" />,
     },
   ];
 
   if (statsError && ordersError) {
-  return (
-    <div className="text-error">
-      Failed to load dashboard data
-    </div>
-  );
-}
-
-if (statsError) {
-  return (
-    <div className="text-error">
-      {statsErrorData?.message}
-    </div>
-  );
-}
-
+    return <div className="text-error">Failed to load dashboard data</div>;
+  }
 
   return (
     <div className="stats stats-vertical lg:stats-horizontal shadow bg-base-100 w-full">
@@ -94,7 +95,9 @@ if (statsError) {
               <span className="loading loading-spinner loading-lg" />
             </div>
           ) : ordersError ? (
-            <div className="card-title">Error fetching orders: {ordersErrorData?.message}</div>
+            <div className="card-title">
+              Error fetching orders: {ordersErrorData?.message}
+            </div>
           ) : recentOrders.length === 0 ? (
             <div className="card-title">No recent orders</div>
           ) : (

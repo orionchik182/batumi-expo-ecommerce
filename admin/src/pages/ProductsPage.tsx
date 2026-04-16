@@ -11,7 +11,13 @@ import ProductModal from "src/components/ProductModal.tsx";
 
 function ProductsPage() {
   const formProps = useProductForm();
-  const { showModal, setShowModal, openEditModal, handleDeleteProduct, isDeleting } = formProps;
+  const {
+    showModal,
+    setShowModal,
+    openEditModal,
+    handleDeleteProduct,
+    deletingProductId,
+  } = formProps;
 
   const {
     data: products = [],
@@ -62,7 +68,7 @@ function ProductsPage() {
               product={product}
               onEdit={openEditModal}
               onDelete={handleDeleteProduct}
-              isDeleting={isDeleting}
+              isDeleting={deletingProductId === product._id}
             />
           ))
         )}
