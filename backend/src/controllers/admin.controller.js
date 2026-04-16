@@ -57,7 +57,7 @@ export async function getAllProducts(_, res) {
 export async function updateProduct(req, res) {
   try {
     const { id } = req.params;
-    const { name, description, price, category, stock } = req.body;
+    const { name, description, price, category, stock, existingImages, imagePositions } = req.body;
 
     const product = await Product.findById(id);
     if (!product) {
@@ -69,9 +69,21 @@ export async function updateProduct(req, res) {
     if (category) product.category = category;
     if (stock !== undefined) product.stock = parseInt(stock);
 
+    let existingImagesArr = [];
+    if (existingImages) {
+      existingImagesArr = Array.isArray(existingImages) ? [...existingImages] : [existingImages];
+    }
+    
+    let positionsArr = [];
+    if (imagePositions) {
+      positionsArr = Array.isArray(imagePositions) ? [...imagePositions] : [imagePositions];
+    }
+
+    let finalImages = [];
+
     // handle image updates if new images are uploaded
     if (req.files && req.files.length > 0) {
-      if (req.files.length > 3) {
+      if (req.files.length + existingImagesArr.length > 3) {
         return res
           .status(400)
           .json({ message: "Maximum 3 images are allowed" });
@@ -82,9 +94,35 @@ export async function updateProduct(req, res) {
         });
       });
       const uploadedResults = await Promise.all(uploadPromises);
-      const imageUrls = uploadedResults.map((result) => result.secure_url);
-      product.images = imageUrls;
+      const newImageUrls = uploadedResults.map((result) => result.secure_url);
+
+      if (positionsArr.length > 0) {
+        let eIdx = 0;
+        let nIdx = 0;
+        for (const pos of positionsArr) {
+          if (pos === "existing" && eIdx < existingImagesArr.length) {
+            finalImages.push(existingImagesArr[eIdx++]);
+          } else if (pos === "new" && nIdx < newImageUrls.length) {
+            finalImages.push(newImageUrls[nIdx++]);
+          }
+        }
+      } else {
+        finalImages = [...existingImagesArr, ...newImageUrls];
+      }
+    } else {
+      if (positionsArr.length > 0) {
+        let eIdx = 0;
+        for (const pos of positionsArr) {
+          if (pos === "existing" && eIdx < existingImagesArr.length) {
+            finalImages.push(existingImagesArr[eIdx++]);
+          }
+        }
+      } else {
+        finalImages = existingImagesArr;
+      }
     }
+    
+    product.images = finalImages;
     await product.save();
     res.status(200).json({ message: "Product updated successfully", product });
   } catch (error) {

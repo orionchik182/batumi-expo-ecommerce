@@ -67,6 +67,15 @@ const DashboardPage = () => {
   );
 }
 
+if (statsError) {
+  return (
+    <div className="text-error">
+      {statsErrorData?.message}
+    </div>
+  );
+}
+
+
   return (
     <div className="stats stats-vertical lg:stats-horizontal shadow bg-base-100 w-full">
       {statsCards.map((stat) => (
