@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import serverless from "serverless-http";
 import path from "path";
 import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
@@ -123,13 +124,22 @@ if (ENV.NODE_ENV === "production") {
 }
 
 // === 7. ЗАПУСК СЕРВЕРА ===
-const startServer = async () => {
-  await connectDB();
-
-  // 0.0.0.0 необходим для работы в Docker-контейнерах на Sevalla
-  app.listen(ENV.PORT, "0.0.0.0", () => {
-    console.log(`Server is up and running on port ${ENV.PORT}`);
+// Проверяем, что мы НЕ в среде Cloudflare
+if (process.env.NODE_ENV !== "production" || !process.env.CLOUDFLARE_CONTEXT) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is up and running on port ${PORT}`);
   });
-};
+}
 
-startServer();
+// 2. Для деплоя на Cloudflare Workers
+export default {
+  fetch: (request, env, ctx) => {
+    // Передаем переменные окружения из Cloudflare в process.env,
+    // чтобы mongoose и другие библиотеки их увидели
+    globalThis.process = { ...globalThis.process, env };
+
+    const handler = serverless(app);
+    return handler(request, env, ctx);
+  },
+};
