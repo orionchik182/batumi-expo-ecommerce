@@ -2,6 +2,11 @@
   "name": "batumi-expo-ecommerce",
   "compatibility_date": "2026-04-16",
   "assets": {
-    "directory": "admin/dist"
+    "directory": "admin/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
   }
 }
