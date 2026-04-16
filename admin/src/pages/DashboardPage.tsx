@@ -26,7 +26,6 @@ const DashboardPage = () => {
     data: statsData,
     isLoading: statsLoading,
     isError: statsError,
-    error: statsErrorData,
   } = useQuery({
     queryKey: ["stats"],
     queryFn: () => statsApi.getDashboard(),
