@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import serverless from "serverless-http";
 import path from "path";
 import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
@@ -86,6 +85,12 @@ app.use(
 // === 4. CLERK ===
 app.use(clerkMiddleware());
 
+const allowedOrigins = [
+  ENV.CLIENT_URL,
+  "http://localhost:5173",
+  "https://batumi-expo-ecommerce.serg-batumi2022.workers.dev",
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -124,6 +129,7 @@ if (ENV.NODE_ENV === "production") {
 }
 
 // === 7. ЗАПУСК СЕРВЕРА ===
+connectDB();
 
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
