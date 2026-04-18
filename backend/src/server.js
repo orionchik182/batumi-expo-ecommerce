@@ -87,23 +87,27 @@ app.use(clerkMiddleware());
 
 const allowedOrigins = [
   ENV.CLIENT_URL,
-  "http://localhost:5173",
+  "https://batumi-expo-ecommerce.pages.dev",
   "https://batumi-expo-ecommerce.serg-batumi2022.workers.dev",
+  "http://localhost:5173",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
+      // Разрешаем запросы без origin (например, мобильные приложения или Postman)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
+        console.log("CORS blocked origin:", origin); // Поможет увидеть в логах, если адрес не совпал
         callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -121,8 +125,6 @@ app.get("/api/health", (req, res) => {
 
 // === 6. РАЗДАЧА ФРОНТЕНДА (не используется, так как фронтенд на Cloudflare) ===
 
-
-
 // === 7. ЗАПУСК СЕРВЕРА ===
 connectDB();
 
@@ -138,7 +140,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     error: "Internal Server Error",
     message: err.message,
-    stack: ENV.NODE_ENV === "development" ? err.stack : undefined
+    stack: ENV.NODE_ENV === "development" ? err.stack : undefined,
   });
 });
 
