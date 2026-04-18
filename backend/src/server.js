@@ -124,22 +124,12 @@ if (ENV.NODE_ENV === "production") {
 }
 
 // === 7. ЗАПУСК СЕРВЕРА ===
-// Проверяем, что мы НЕ в среде Cloudflare
-if (process.env.NODE_ENV !== "production" || !process.env.CLOUDFLARE_CONTEXT) {
+
+if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);
   });
 }
 
-// 2. Для деплоя на Cloudflare Workers
-export default {
-  fetch: (request, env, ctx) => {
-    // Передаем переменные окружения из Cloudflare в process.env,
-    // чтобы mongoose и другие библиотеки их увидели
-    globalThis.process = { ...globalThis.process, env };
-
-    const handler = serverless(app);
-    return handler(request, env, ctx);
-  },
-};
+export default app;

@@ -1,9 +1,0 @@
-{
-  "name": "batumi-expo-ecommerce-api",
-  "compatibility_date": "2026-04-16",
-  "main": "backend/src/server.js",
-  "compatibility_flags": ["nodejs_compat"],
-  "observability": {
-    "enabled": true
-  }
-}
