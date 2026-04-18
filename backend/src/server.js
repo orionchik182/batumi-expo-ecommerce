@@ -119,14 +119,9 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Success" });
 });
 
-// === 6. РАЗДАЧА ФРОНТЕНДА (Оставил правильный путь на будущее) ===
-if (ENV.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../admin/dist")));
+// === 6. РАЗДАЧА ФРОНТЕНДА (не используется, так как фронтенд на Cloudflare) ===
 
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../admin/dist", "index.html"));
-  });
-}
+
 
 // === 7. ЗАПУСК СЕРВЕРА ===
 connectDB();
@@ -137,5 +132,14 @@ if (process.env.NODE_ENV !== "production") {
     console.log(`Server is up and running on port ${PORT}`);
   });
 }
+
+app.use((err, req, res, next) => {
+  console.error("Global Error Handler Caught:", err);
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+    stack: ENV.NODE_ENV === "development" ? err.stack : undefined
+  });
+});
 
 export default app;
