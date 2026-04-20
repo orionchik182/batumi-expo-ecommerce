@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
     const safeExt = ["jpeg", "jpg", "png", "gif", "webp"].includes(ext)
       ? ext
       : "";
-    const unique = `${Date.now()}-${Math.random(Math.random() * 1e9)}`;
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, `${unique}${safeExt}`);
   },
 });
