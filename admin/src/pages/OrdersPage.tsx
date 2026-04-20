@@ -60,6 +60,7 @@ function OrdersPage() {
                     <th>Order ID</th>
                     <th>Customer</th>
                     <th>Date</th>
+                    <th>Items</th>
                     <th>Total</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -90,6 +91,11 @@ function OrdersPage() {
                           </div>
                         </td>
                         <td>
+                          <span className="text-sm opacity-60">
+                            {formatDate(order.createdAt)}
+                          </span>
+                        </td>
+                        <td>
                           <div className="font-medium">
                             {totalQuantity} items
                           </div>
@@ -118,11 +124,6 @@ function OrdersPage() {
                             <option value="delivered">Delivered</option>
                             <option value="cancelled">Cancelled</option>
                           </select>
-                        </td>
-                        <td>
-                          <span className="text-sm opacity-60">
-                            {formatDate(order.createdAt)}
-                          </span>
                         </td>
                         <td>
                           <button

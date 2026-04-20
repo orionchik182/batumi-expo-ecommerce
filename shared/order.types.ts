@@ -1,3 +1,16 @@
+export interface OrderUser {
+  _id: string;
+  name?: string;
+  email?: string;
+}
+
+export interface OrderProduct {
+  _id: string;
+  name?: string;
+  image?: string;
+  price?: number;
+}
+
 export interface ShippingAddress {
   fullName: string;
   streetAddress: string;
@@ -10,7 +23,7 @@ export interface ShippingAddress {
 
 export interface OrderItem {
   _id: string;
-  product: string;
+  product: string | OrderProduct;
   name: string;
   price: number;
   quantity: number;
@@ -24,7 +37,7 @@ export interface PaymentResult {
 
 export interface Order {
   _id: string;
-  user: string;
+  user: string | OrderUser;
   clerkId: string;
   orderItems: OrderItem[];
   shippingAddress: ShippingAddress;
