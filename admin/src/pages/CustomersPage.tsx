@@ -59,12 +59,18 @@ function CustomersPage() {
                       <td>
                         <div className="flex items-center gap-3">
                           <div className="avatar placeholder">
-                            <div className="w-12 rounded-full bg-primary text-primary-content">
-                              <img
-                                src={customer.imageUrl}
-                                alt={customer.name}
-                                className="size-12 rounded-full"
-                              />
+                            <div className="w-12 rounded-full bg-primary text-primary-content grid place-items-center">
+                              {customer.imageUrl ? (
+                                <img
+                                  src={customer.imageUrl}
+                                  alt={customer.name}
+                                  className="size-12 rounded-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-sm font-semibold">
+                                  {customer.name?.[0]?.toUpperCase() ?? "?"}
+                                </span>
+                              )}
                             </div>
                           </div>
                           <div className="font-semibold">{customer.name}</div>
