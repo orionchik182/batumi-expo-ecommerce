@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/react"
 
 const LoginPage = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="hero h-screen">
     <SignIn />
     </div>
   )

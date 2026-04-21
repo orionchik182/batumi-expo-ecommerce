@@ -59,10 +59,10 @@ function ProductsPage() {
           <div className="card-title">
             Error fetching products: {error.message}
           </div>
-        ) : products.length === 0 ? (
+        ) : products?.length === 0 ? (
           <div className="card-title">No products found</div>
         ) : (
-          products.map((product: any) => (
+          products?.map((product: any) => (
             <ProductItem
               key={product._id}
               product={product}

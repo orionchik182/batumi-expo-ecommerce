@@ -87,8 +87,6 @@ app.use(clerkMiddleware());
 
 const allowedOrigins = [
   ENV.CLIENT_URL,
-  "https://batumi-expo-ecommerce.pages.dev",
-  "https://batumi-expo-ecommerce.serg-batumi2022.workers.dev",
   "http://localhost:5173",
 ];
 
