@@ -18,6 +18,7 @@ export function useProductMutations(onSuccessCallback: () => void) {
       invalidate();
     },
     onError: () => toast.error("Create failed"),
+    
   });
 
   const updateMutation = useMutation({
