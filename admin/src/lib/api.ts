@@ -64,3 +64,11 @@ export const statsApi = {
     return data;
   },
 };
+
+export const customersApi = {
+  getAll: async () => {
+    const { data } = await axiosInstance.get("/admin/customers");
+    return data;
+  },
+  
+}
