@@ -74,24 +74,12 @@ app.post(
 // === 2. БАЗОВЫЕ НАСТРОЙКИ ===
 app.use(express.json());
 
-// === 3. INNGEST ===
-app.use(
-  "/api/inngest",
-  serve({
-    client: inngest,
-    functions,
-  }),
-);
-// === 4. CLERK ===
-app.use(clerkMiddleware());
-
-const envOrigins = ENV.CLIENT_URLS ? ENV.CLIENT_URLS.split(',') : [];
+const envOrigins = ENV.CLIENT_URLS
+  ? ENV.CLIENT_URLS.split(",").map((url) => url.trim())
+  : [];
 
 // Объединяем адреса из .env и локалхост
-const allowedOrigins = [
-  ...envOrigins, 
-  "http://localhost:5173"
-];
+const allowedOrigins = [...envOrigins, "http://localhost:5173"];
 
 app.use(
   cors({
@@ -111,6 +99,17 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+// === 3. INNGEST ===
+app.use(
+  "/api/inngest",
+  serve({
+    client: inngest,
+    functions,
+  }),
+);
+// === 4. CLERK ===
+app.use(clerkMiddleware());
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
