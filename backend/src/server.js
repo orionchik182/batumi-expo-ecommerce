@@ -85,9 +85,12 @@ app.use(
 // === 4. CLERK ===
 app.use(clerkMiddleware());
 
+const envOrigins = ENV.CLIENT_URLS ? ENV.CLIENT_URLS.split(',') : [];
+
+// Объединяем адреса из .env и локалхост
 const allowedOrigins = [
-  ENV.CLIENT_URL,
-  "http://localhost:5173",
+  ...envOrigins, 
+  "http://localhost:5173"
 ];
 
 app.use(
