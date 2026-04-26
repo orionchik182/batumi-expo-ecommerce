@@ -1,15 +1,5 @@
-export interface OrderUser {
-  _id: string;
-  name?: string;
-  email?: string;
-}
-
-export interface OrderProduct {
-  _id: string;
-  name?: string;
-  image?: string;
-  price?: number;
-}
+import type { Product } from "./product.types";
+import type { User } from "./user.types";
 
 export interface ShippingAddress {
   fullName: string;
@@ -23,7 +13,7 @@ export interface ShippingAddress {
 
 export interface OrderItem {
   _id: string;
-  product: string | OrderProduct;
+  product: Product;
   name: string;
   price: number;
   quantity: number;
@@ -37,7 +27,7 @@ export interface PaymentResult {
 
 export interface Order {
   _id: string;
-  user: string | OrderUser;
+  user: string | User;
   clerkId: string;
   orderItems: OrderItem[];
   shippingAddress: ShippingAddress;
