@@ -16,6 +16,7 @@ export interface Address {
   fullName: string;
   streetAddress: string;
   city: string;
+  country: string;
   state: string;
   zipCode: string;
   phoneNumber: string;

@@ -1,5 +1,5 @@
-import { Product } from "./product.types";
-import { User } from "./user.types";
+import type { Product } from "./product.types";
+import type { User } from "./user.types";
 
 export interface ShippingAddress {
   fullName: string;
