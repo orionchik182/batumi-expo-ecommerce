@@ -11,7 +11,8 @@ import useSocialAuth from "@/hooks/useSocialAuth";
 
 const AuthScreen = () => {
   const router = useRouter();
-  const { handleSocialAuth, isLoading } = useSocialAuth();
+  const { handleSocialAuth, loadingStrategy } = useSocialAuth();
+  const isLoading = loadingStrategy !== null;
   return (
     <View className="flex-1 items-center justify-center bg-white px-8">
       {/* Demo Image */}
@@ -35,7 +36,7 @@ const AuthScreen = () => {
           }}
         >
           <View className="flex-row items-center justify-center gap-2">
-            {isLoading ? (
+            {loadingStrategy === "oauth_google" ? (
               <ActivityIndicator size={"small"} color="#4285f4" />
             ) : (
               <View className="flex-row items-center justify-center gap-2">
@@ -65,8 +66,8 @@ const AuthScreen = () => {
           }}
         >
           <View className="flex-row items-center justify-center gap-2">
-            {isLoading ? (
-              <ActivityIndicator size={"small"} color="#4285f4" />
+            {loadingStrategy === "oauth_apple" ? (
+              <ActivityIndicator size={"small"} color="#000" />
             ) : (
               <View className="flex-row items-center justify-center gap-2">
                 <Image
