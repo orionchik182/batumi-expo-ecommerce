@@ -3,14 +3,18 @@ import axios from "axios";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
+import * as Device from "expo-device";
+
 let API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (Device.isDevice) {
+  API_URL = process.env.EXPO_PUBLIC_API_URL_PHYSICAL_DEVICE;
+} else if (Platform.OS === "android" && API_URL && API_URL.includes("localhost")) {
+  API_URL = API_URL.replace("localhost", "10.0.2.2");
+}
 
 if (!API_URL) {
   throw new Error("Add your API URL to the .env file");
-}
-
-if (Platform.OS === "android" && API_URL.includes("localhost")) {
-  API_URL = API_URL.replace("localhost", "10.0.2.2");
 }
 
 const api = axios.create({
