@@ -3,6 +3,7 @@ import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";
 import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient();
 
@@ -14,10 +15,11 @@ if (!publishableKey) {
 
 export default function RootLayout() {
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <QueryClientProvider client={queryClient}>
         <Stack screenOptions={{ headerShown: false }} />
       </QueryClientProvider>
     </ClerkProvider>
-  );
+  </GestureHandlerRootView>);
 }
