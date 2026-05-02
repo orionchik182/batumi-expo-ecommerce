@@ -43,7 +43,7 @@ const ProductGrid = ({
         onError: (error: any) => {
           Alert.alert(
             "Error",
-            `Failed to add ${productName} to cart, ${error?.response?.data?.error || "Unknown error"}`,
+            `Failed to add ${productName} to cart, ${error?.response?.data?.error || error?.response?.data?.message ||"Unknown error"}`,
           );
         },
       },

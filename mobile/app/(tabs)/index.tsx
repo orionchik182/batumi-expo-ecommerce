@@ -27,7 +27,7 @@ const ShopScreen = () => {
   } = useProducts();
 
   const filteredProducts = useMemo(
-    () => filterProducts(products as Product[], searchQuery, selectedCategory),
+    () => filterProducts(products as Product[] ?? [], searchQuery, selectedCategory),
     [products, searchQuery, selectedCategory],
   );
 

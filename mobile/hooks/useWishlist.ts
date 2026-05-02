@@ -46,6 +46,7 @@ const useWishlist = () => {
     },
   });
   const toggleWishlist = (productId: string) => {
+    if (isLoading || isError) return;
     if (isInWishlist(productId)) {
       removeFromWishlistMutation.mutate(productId);
     } else {
