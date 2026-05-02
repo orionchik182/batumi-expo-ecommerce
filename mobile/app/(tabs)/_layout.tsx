@@ -30,7 +30,7 @@ const TabsLayout = () => {
           position: "absolute",
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.25)",
+          borderColor: "rgba(255, 255, 255, 0.1)",
           height: 64 + (Platform.OS === "ios" ? insets.bottom / 2 : 10),
           paddingTop: 8,
           paddingBottom: Platform.OS === "ios" ? insets.bottom / 2 : 10,
@@ -40,7 +40,7 @@ const TabsLayout = () => {
           overflow: "hidden",
         },
         tabBarBackground: () => (
-          <GlassView style={StyleSheet.absoluteFill} colorScheme="dark" glassEffectStyle="clear" tintColor="transparent" />
+          <GlassView style={[StyleSheet.absoluteFill, { borderRadius: 32 }]} colorScheme="dark" glassEffectStyle="clear" tintColor="transparent" />
         ),
         tabBarLabelStyle: {
           fontWeight: "600",
