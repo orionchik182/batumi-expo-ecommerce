@@ -15,8 +15,8 @@ const useCart = () => {
       productId: string;
       quantity?: number;
     }) => {
-      const { data } = await api.post<{ message: string; cart: Cart }>(
-        `/cart`,
+      const { data } = await api.post<{ cart: Cart }>(
+        `/cart/add`,
         { productId, quantity },
       );
       return data.cart;
@@ -28,7 +28,7 @@ const useCart = () => {
   return {
     addToCart: addToCartMutation.mutate,
     isAddingToCart: addToCartMutation.isPending,
-    
+    addingCartId: addToCartMutation.variables?.productId,
   }
 };
 

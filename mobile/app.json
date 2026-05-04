@@ -42,7 +42,15 @@
       ],
       "@clerk/expo",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "expo-ecommerce-mobile",
+          "organization": "owncompany-wj"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -33,7 +33,7 @@ export async function addToCart(req, res) {
       return res.status(400).json({ message: "Product out of stock" });
     }
 
-    let cart = await Cart.findOne({ userId: user._id });
+    let cart = await Cart.findOne({ user: user._id });
     if (!cart) {
       cart = await Cart.create({
         user: user._id,
