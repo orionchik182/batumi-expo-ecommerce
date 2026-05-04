@@ -1,7 +1,6 @@
 import { useApi } from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-
 const useWishlist = () => {
   const api = useApi();
   const queryClient = useQueryClient();
@@ -12,21 +11,25 @@ const useWishlist = () => {
   } = useQuery({
     queryKey: ["wishlist"],
     queryFn: async () => {
-      const { data } = await api.get<{ message: string; wishlist: string[] }>(
-        "/users/wishlist",
+      const { data } = await api.get<{ message: string; wishlist: any[] }>(
+        "/user/wishlist",
       );
       return data.wishlist;
     },
   });
 
   const isInWishlist = (productId: string) => {
-    return wishlist?.includes(productId);
+    return wishlist?.some((item: any) => {
+      if (typeof item === 'string') return item === productId;
+      return item?._id === productId;
+    });
   };
 
   const addToWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const { data } = await api.post<{ message: string; wishlist: string }>(
-        `/users/wishlist/${productId}`,
+      const { data } = await api.post<{ wishlist: string[] }>(
+        `/user/wishlist`,
+        { productId }
       );
       return data.wishlist;
     },
@@ -36,8 +39,8 @@ const useWishlist = () => {
   });
   const removeFromWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const { data } = await api.delete<{ message: string; wishlist: string }>(
-        `/users/wishlist/${productId}`,
+      const { data } = await api.delete<{ wishlist: string[] }>(
+        `/user/wishlist/${productId}`,
       );
       return data.wishlist;
     },
@@ -60,11 +63,13 @@ const useWishlist = () => {
     isError,
     wishlistCount: wishlist?.length || 0,
     addToWishlist: addToWishlistMutation.mutate,
-    isInWishlist: isInWishlist,
+    isInWishlist,
     removeFromWishlist: removeFromWishlistMutation.mutate,
     isAddingToWishlist: addToWishlistMutation.isPending,
+    addingWishlistId: addToWishlistMutation.variables,
     isRemovingFromWishlist: removeFromWishlistMutation.isPending,
-    toggleWishlist: toggleWishlist,
+    removingWishlistId: removeFromWishlistMutation.variables,
+    toggleWishlist,
   };
 };
 

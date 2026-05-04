@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import React, { useMemo } from "react";
 import SafeScreen from "../components/SafeScreen";
@@ -16,6 +17,8 @@ import { filterProducts } from "@/utils/filterProducts";
 import CategoryFilters from "../components/CategoryFilters";
 import type { Product } from "../../../shared/product.types";
 
+
+
 const ShopScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -27,7 +30,12 @@ const ShopScreen = () => {
   } = useProducts();
 
   const filteredProducts = useMemo(
-    () => filterProducts(products as Product[] ?? [], searchQuery, selectedCategory),
+    () =>
+      filterProducts(
+        (products as Product[]) ?? [],
+        searchQuery,
+        selectedCategory,
+      ),
     [products, searchQuery, selectedCategory],
   );
 
@@ -42,6 +50,7 @@ const ShopScreen = () => {
         <View className="px-6 pb-4 pt-6">
           <View className="flex-row items-center justify-between mb-6">
             <View>
+              
               <Text className="text-text-primary text-3xl font-bold tracking-tight">
                 Shop
               </Text>
