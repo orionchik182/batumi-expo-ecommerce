@@ -2,9 +2,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
-  Button,
 } from "react-native";
 import React, { useMemo } from "react";
 import SafeScreen from "../components/SafeScreen";

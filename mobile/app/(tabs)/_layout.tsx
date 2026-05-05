@@ -37,7 +37,7 @@ function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarPr
       style={[
         styles.tabBarContainer,
         {
-          height: 64 + (Platform.OS === "ios" ? insets.bottom / 2 : 10),
+          height: 60 + (Platform.OS === "ios" ? insets.bottom / 2 : 10),
           marginBottom: Platform.OS === "ios" ? insets.bottom : 20,
           paddingBottom: Platform.OS === "ios" ? insets.bottom / 2 : 10,
         },
@@ -65,7 +65,7 @@ function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarPr
       >
         {tabBarWidth > 0 && (
           <Animated.View
-            style={[styles.activePill, { width: tabWidth }, animatedStyle]}
+            style={[styles.activePill, { width: tabWidth-2 }, animatedStyle]}
           />
         )}
 
@@ -75,7 +75,7 @@ function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarPr
           const color = isFocused ? "#1DB954" : "#B3B3B3";
 
           const onPress = () => {
-            const event = navigation.emit({
+            const event = navigation.emit({ 
               type: "tabPress",
               target: route.key,
               canPreventDefault: true,
@@ -93,7 +93,7 @@ function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarPr
               style={styles.tabButton}
             >
               {options.tabBarIcon &&
-                options.tabBarIcon({ color, size: 22, focused: isFocused })}
+                options.tabBarIcon({ color, size: 20, focused: isFocused })}
               <Text
                 style={{
                   color,
@@ -165,7 +165,8 @@ const TabsLayout = () => {
 const styles = StyleSheet.create({
   tabBarContainer: {
     position: "absolute",
-    marginHorizontal: 60,
+    marginHorizontal: 70,
+    
     borderTopWidth: 0,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.1)",
@@ -174,13 +175,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingTop: 8,
+    paddingTop: 15,
   },
   pillTrack: {
     flex: 1,
     flexDirection: "row",
     position: "relative",
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
   },
   activePill: {
     position: "absolute",
@@ -188,6 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 24,
     left: 8,
+    marginTop: 0,
   },
   tabButton: {
     flex: 1,

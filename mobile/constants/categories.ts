@@ -4,4 +4,4 @@ export const CATEGORIES = [
   { name: "Fashion", image: require("@/assets/images/fashion.png") },
   { name: "Sports", image: require("@/assets/images/sports.png") },
   { name: "Books", image: require("@/assets/images/books.png") },
-];
+] as const;
