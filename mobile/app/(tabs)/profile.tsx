@@ -49,7 +49,7 @@ const ProfileScreen = () => {
                   {user?.firstName} {user?.lastName}
                 </Text>
                 <Text className="text-text-secondary text-sm">
-                  {user?.emailAddresses[0]?.emailAddress}
+                  {user?.emailAddresses[0]?.emailAddress ?? "Not Found"}
                 </Text>
               </View>
             </View>
@@ -122,7 +122,13 @@ const ProfileScreen = () => {
 
         {/* Sign Out button */}
         <TouchableOpacity
-          onPress={() => signOut()}
+          onPress={async () => {
+            try {
+              await signOut();
+            } catch (err) {
+              console.error("Sign out failed", err);
+            }
+          }}
           className="mx-6 mb-3 bg-surface rounded-2xl py-5 flex-row items-center justify-center border-2 border-red-500/20"
           activeOpacity={0.7}
         >
