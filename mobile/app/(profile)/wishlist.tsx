@@ -30,16 +30,20 @@ const WishlistScreen = () => {
     name: string;
   } | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { addToCart, isAddingToCart } = useCart();
+  const [addiingToCartId, setAddingToCartId] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
   const handleAddToCart = (productId: string, productName: string) => {
+    setAddingToCartId(productId);
     addToCart(
       { productId, quantity: 1 },
       {
         onSuccess: () => {
+          setAddingToCartId(null);
           Alert.alert("Success", `${productName} added to cart`);
         },
         onError: (error: any) => {
+          setAddingToCartId(null);
           Alert.alert(
             "Error",
             error?.response?.data?.error || "Failed to add to cart",
@@ -49,9 +53,9 @@ const WishlistScreen = () => {
     );
   };
 
-  if(isLoading) return <LoadingUI title={'Wishlist'} />
+  if (isLoading) return <LoadingUI title={"Wishlist"} />;
 
-  if(isError) return <ErrorUI error={isError} title={'Wishlist'} />
+  if (isError) return <ErrorUI error={isError} title={"Wishlist"} />;
 
   return (
     <SafeScreen>
@@ -148,10 +152,10 @@ const WishlistScreen = () => {
                     <TouchableOpacity
                       className="bg-primary py-3 rounded-xl items-center"
                       activeOpacity={0.8}
-                      disabled={isAddingToCart}
+                      disabled={addiingToCartId === item._id}
                       onPress={() => handleAddToCart(item._id, item.name)}
                     >
-                      {isAddingToCart ? (
+                      {addiingToCartId === item._id ? (
                         <ActivityIndicator color="#121212" size={"small"} />
                       ) : (
                         <Text className="text-background font-bold">
