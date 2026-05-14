@@ -15,7 +15,7 @@ const ProfileScreen = () => {
   const router = useRouter();
   const handleMenuPress = (action: (typeof MENU_ITEMS)[number]["action"]) => {
     if (action === "/profile") return;
-    // router.push(action);
+    router.push(action);
   };
 
   return (
@@ -81,7 +81,7 @@ const ProfileScreen = () => {
         {/* Notifications btn*/}
         <View className="mx-6 mb-3 bg-surface rounded-2xl p-4">
           <TouchableOpacity
-            // onPress={() => handleMenuPress("/notifications")}
+            onPress={() => router.push("/notifications")}
             className="flex-row items-center justify-between py-2"
             activeOpacity={0.7}
           >
@@ -102,7 +102,7 @@ const ProfileScreen = () => {
         {/* Privacy and security link */}
         <View className="mx-6 mb-3 bg-surface rounded-2xl p-4">
           <TouchableOpacity
-            // onPress={() => handleMenuPress("/privacy-security")}
+            onPress={() => router.push("/privacy-security")}
             className="flex-row items-center justify-between py-2"
             activeOpacity={0.7}
           >
