@@ -23,6 +23,19 @@ export interface Address {
   isDefault: boolean;
 }
 
+export interface AddressFormData extends Omit<Address, "_id"> { }
+
+export interface AddressFormModalProps {
+  visible: boolean;
+  isEditing: boolean;
+  addressData: AddressFormData;
+  isAddingAddress: boolean;
+  isUpdatingAddress: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  onFormChange: (addressData: AddressFormData) => void;
+}
+
 export interface Review {
   _id: string;
   productId: string;

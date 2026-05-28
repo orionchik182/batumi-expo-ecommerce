@@ -1,11 +1,10 @@
-import SafeScreen from '@/app/components/SafeScreen'
-import { View, Text } from 'react-native'
-import React from 'react'
+import Header from '../components/Header'
+import SafeScreen from '../components/SafeScreen'
 
 const OrdersScreen = () => {
   return (
     <SafeScreen>
-      <Text className="text-white">OrdersScreen</Text>
+      <Header title="My Orders" />
     </SafeScreen>
   )
 }

@@ -16,6 +16,7 @@ import { Image } from "expo-image";
 import CustomModal from "../components/CustomModal";
 import LoadingUI from "../components/LoadingUI";
 import ErrorUI from "../components/ErrorUI";
+import Header from "../components/Header";
 
 const WishlistScreen = () => {
   const {
@@ -59,15 +60,11 @@ const WishlistScreen = () => {
 
   return (
     <SafeScreen>
-      <View className="px-6 pb-5 border-b border-surface flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={28} color={"#FFFFFF"} />
-        </TouchableOpacity>
-        <Text className="text-text-primary text-2xl font-bold">Wishlist</Text>
+      <Header title="Wishlist">
         <Text className="text-text-secondary text-sm ml-auto">
           {wishlist.length} {wishlist.length === 1 ? "item" : "items"}
         </Text>
-      </View>
+      </Header>
       {wishlist.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Ionicons name="heart-outline" size={80} color={"#666"} />
@@ -181,6 +178,7 @@ const WishlistScreen = () => {
         }}
         toggleModal={() => setIsModalVisible(false)}
         productName={productToRemove?.name || ""}
+        message="Wishlist"
       />
     </SafeScreen>
   );

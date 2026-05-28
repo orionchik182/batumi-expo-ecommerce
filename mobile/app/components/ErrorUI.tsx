@@ -12,7 +12,7 @@ const ErrorUI = ({error, title}:{error: any, title: string}) => {
         <TouchableOpacity onPress={() => router.back()} className="mr-4">
           <Ionicons name="arrow-back" size={28} color={"#FFFFFF"} />
         </TouchableOpacity>
-        <Text className="text-text-primary text-2xl font-bold">Error</Text>
+        <Text className="text-text-primary text-2xl font-bold">{title}</Text>
       </View>
 
       <View className="flex-1 items-center justify-center px-6">

@@ -36,7 +36,7 @@ const CustomModal = ({
         <View style={styles.dragHandle} />
 
         
-        <Text style={styles.text}>Remove <Text className="font-bold">{productName}</Text> from wishlist?</Text>
+        <Text style={styles.text}>Remove <Text className="font-bold">{productName}</Text> from {message}?</Text>
         
 
         <View style={styles.buttonContainer}>

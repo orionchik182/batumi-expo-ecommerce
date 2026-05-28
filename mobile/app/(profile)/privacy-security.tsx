@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import type { SecurityOption } from "../../../shared/security.types";
+import Header from "../components/Header";
 
 const PrivacySecurityScreen = () => {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
@@ -122,14 +123,7 @@ const PrivacySecurityScreen = () => {
   return (
     <SafeScreen>
       {/* Header */}
-      <View className="px-6 pb-5 border-b border-surface flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()} className="mr-4">
-          <Ionicons name="arrow-back" size={28} color={"#FFFFFF"} />
-        </TouchableOpacity>
-        <Text className="text-text-primary text-2xl font-bold">
-          Privacy & Security
-        </Text>
-      </View>
+      <Header title="Privacy & Security" />
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
