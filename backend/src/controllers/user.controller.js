@@ -100,7 +100,7 @@ export async function updateAddress(req, res) {
     address.state = state || address.state;
     address.zipCode = zipCode || address.zipCode;
     address.phoneNumber = phoneNumber || address.phoneNumber;
-    address.isDefault = isDefault || address.isDefault;
+    address.isDefault = isDefault !== undefined ? isDefault : address.isDefault;
 
     await user.save();
     return res.status(200).json({
