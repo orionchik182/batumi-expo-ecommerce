@@ -13,7 +13,7 @@ const Header = ({ title, children, onBack }: HeaderProps) => {
   return (
 
     <View className="px-6 pb-5 border-b border-surface flex-row items-center">
-      <TouchableOpacity onPress={() => { onBack ? onBack() : router.back() }} className="mr-4">
+      <TouchableOpacity onPress={() => { onBack ? onBack() : router.back() }} className="mr-4" accessibilityRole="button" accessibilityLabel={onBack ? "Close" : "Go back"}>
         <Ionicons name={onBack ? "close" : "arrow-back" as any} size={28} color={"#FFFFFF"} />
       </TouchableOpacity>
       <Text className="text-text-primary text-2xl font-bold">

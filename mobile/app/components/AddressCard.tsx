@@ -31,7 +31,7 @@ const AddressCard = ({ address, onDelete, onEdit, isDeletingAddress, isUpdatingA
                     </View>
                 )}
             </View>
-            <View className='ml-15'>
+            <View className='ml-16'>
                 <Text className='text-text-primary font-semibold mb-1'>{address.fullName}</Text>
                 <Text className='text-text-secondary text-sm mb-1'>{address.streetAddress}</Text>
                 <Text className='text-text-secondary text-sm mb-2'>{address.city}, {address.state} {address.zipCode}</Text>

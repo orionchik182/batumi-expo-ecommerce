@@ -25,7 +25,6 @@ const AddressScreen = () => {
     isDeletingAddress,
   } = useAddresses();
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState<Omit<Address, "_id">>({
     label: "",
@@ -69,8 +68,24 @@ const AddressScreen = () => {
     });
   };
   const handleDeleteAddress = (addressId: string) => {
-
-    deleteAddress(addressId);
+    Alert.alert("Delete Address", "Are you sure you want to delete this address?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteAddress(addressId, {
+          onSuccess: () => {
+            Alert.alert("Success", "Address deleted successfully");
+          },
+          onError: (error) => {
+            Alert.alert("Error", error.message);
+          },
+        }),
+      },
+    ]);
   };
   const handleSaveAddress = () => {
     if (!addressForm.label || !addressForm.fullName || !addressForm.phoneNumber || !addressForm.streetAddress || !addressForm.city || !addressForm.state || !addressForm.zipCode || !addressForm.country) {
