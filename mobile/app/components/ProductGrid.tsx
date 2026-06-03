@@ -14,6 +14,7 @@ import NoProductsFound from "./NoProductsFound";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import useCart from "@/hooks/useCart";
+import { router } from "expo-router";
 
 const ProductGrid = ({
   products,
@@ -45,7 +46,7 @@ const ProductGrid = ({
         onError: (error: any) => {
           Alert.alert(
             "Error",
-            `Failed to add ${productName} to cart, ${error?.response?.data?.error || error?.response?.data?.message ||"Unknown error"}`,
+            `Failed to add ${productName} to cart, ${error?.response?.data?.error || error?.response?.data?.message || "Unknown error"}`,
           );
         },
       },
@@ -63,7 +64,7 @@ const ProductGrid = ({
         className="bg-surface rounded-3xl overflow-hidden mb-3 justify-between"
         style={{ width: "48%" }}
         activeOpacity={0.8}
-        //   onPress={() => router.push(`/product/${product._id}`)}
+        onPress={() => router.push(`/product/${product._id}`)}
       >
         <View className="relative">
           <Image
