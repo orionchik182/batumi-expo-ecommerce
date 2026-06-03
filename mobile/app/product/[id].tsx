@@ -60,7 +60,7 @@ const ProductDetailScreen = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }} className='flex-1'>
                 {/** Image Carousel */}
                 <View className="relative">
-                    <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onScroll={(e) => {
+                    <ScrollView horizontal pagingEnabled scrollEventThrottle={16} showsHorizontalScrollIndicator={false} onScroll={(e) => {
                         const index = Math.round(e.nativeEvent.contentOffset.x / width);
                         setSelectedImageIndex(index);
                     }}>
@@ -91,59 +91,59 @@ const ProductDetailScreen = () => {
                             <Text className='text-primary text-xs font-bold'>{product.category}</Text>
                         </View>
                     </View>
-                </View>
-                {/* Product Name */}
-                <Text className='text-text-primary text-3xl font-bold mb-3'>{product.name}</Text>
-                {/* Rating & Reviews */}
-                <View className='flex-row items-center mb-4'>
-                    <View className='flex-row items-center bg-surface px-3 py-2 rounded-full'>
-                        <Ionicons name="star" size={16} color={'#FFC107'} />
-                        <Text className='text-text-primary font-bold ml-1 mr-2'>{product.averageRating?.toFixed(1)}</Text>
-                        <Text className='text-text-secondary text-sm'>({product.totalReviews} reviews)</Text>
-                    </View>
-                    {inStock ? (
-                        <View className='ml-3 flex-row items-center'>
-                            <View className='size-2 bg-green-500 rounded-full mr-2' />
-                            <Text className='text-green-500 font-semibold text-sm'>{product.stock} in stock</Text>
 
+                    {/* Product Name */}
+                    <Text className='text-text-primary text-3xl font-bold mb-3'>{product.name}</Text>
+                    {/* Rating & Reviews */}
+                    <View className='flex-row items-center mb-4'>
+                        <View className='flex-row items-center bg-surface px-3 py-2 rounded-full'>
+                            <Ionicons name="star" size={16} color={'#FFC107'} />
+                            <Text className='text-text-primary font-bold ml-1 mr-2'>{product.averageRating?.toFixed(1)}</Text>
+                            <Text className='text-text-secondary text-sm'>({product.totalReviews} reviews)</Text>
                         </View>
-                    ) : (
-                        <View className='ml-3 flex-row items-center'>
-                            <View className='size-2 bg-red-500 rounded-full mr-2' />
-                            <Text className='text-red-500 font-semibold text-sm'>Out of Stock</Text>
+                        {inStock ? (
+                            <View className='ml-3 flex-row items-center'>
+                                <View className='size-2 bg-green-500 rounded-full mr-2' />
+                                <Text className='text-green-500 font-semibold text-sm'>{product.stock} in stock</Text>
 
-                        </View>
-                    )}
+                            </View>
+                        ) : (
+                            <View className='ml-3 flex-row items-center'>
+                                <View className='size-2 bg-red-500 rounded-full mr-2' />
+                                <Text className='text-red-500 font-semibold text-sm'>Out of Stock</Text>
 
-                </View>
-                {/**Price */}
-                <View className='flex-row items-center mb-6'>
-                    <Text className='text-primary text-4xl font-bold'>${product.price?.toFixed(2)}</Text>
-                </View>
-                {/* Quantity */}
-                <View className='mb-6'>
-                    <Text className='text-text-primary text-lg font-bold mb-3'>Quantity</Text>
-                    <View className='flex-row items-center'>
-                        <TouchableOpacity className='bg-surface rounded-full size-12 items-center justify-center' onPress={() => setQuantity(Math.max(1, quantity - 1))} activeOpacity={0.7} disabled={!inStock}>
-                            <Ionicons name='remove' size={24} color={!inStock ? "#666" : "#FFFFFF"} />
-                        </TouchableOpacity>
-                        <Text className='text-text-primary text-xl font-bold mx-6'>{quantity}</Text>
-                        <TouchableOpacity
-                            className='bg-primary rounded-full size-12 items-center justify-center' onPress={() => setQuantity(Math.min(product.stock, quantity + 1))} activeOpacity={0.7} disabled={!inStock || quantity >= product.stock}>
-                            <Ionicons name='add' size={24} color={!inStock || quantity >= product.stock ? "#666" : "#121212"} />
-                        </TouchableOpacity>
+                            </View>
+                        )}
+
                     </View>
-                    {quantity >= product.stock && inStock && (
-                        <Text className='text-orange-500 text-sm mt-2'>Maximum stock reached</Text>
-                    )}
+                    {/**Price */}
+                    <View className='flex-row items-center mb-6'>
+                        <Text className='text-primary text-4xl font-bold'>${product.price?.toFixed(2)}</Text>
+                    </View>
+                    {/* Quantity */}
+                    <View className='mb-6'>
+                        <Text className='text-text-primary text-lg font-bold mb-3'>Quantity</Text>
+                        <View className='flex-row items-center'>
+                            <TouchableOpacity className='bg-surface rounded-full size-12 items-center justify-center' onPress={() => setQuantity(Math.max(1, quantity - 1))} activeOpacity={0.7} disabled={!inStock}>
+                                <Ionicons name='remove' size={24} color={!inStock ? "#666" : "#FFFFFF"} />
+                            </TouchableOpacity>
+                            <Text className='text-text-primary text-xl font-bold mx-6'>{quantity}</Text>
+                            <TouchableOpacity
+                                className='bg-primary rounded-full size-12 items-center justify-center' onPress={() => setQuantity(Math.min(product.stock, quantity + 1))} activeOpacity={0.7} disabled={!inStock || quantity >= product.stock}>
+                                <Ionicons name='add' size={24} color={!inStock || quantity >= product.stock ? "#666" : "#121212"} />
+                            </TouchableOpacity>
+                        </View>
+                        {quantity >= product.stock && inStock && (
+                            <Text className='text-orange-500 text-sm mt-2'>Maximum stock reached</Text>
+                        )}
 
+                    </View>
+                    {/* Description */}
+                    <View className="mb-8">
+                        <Text className="text-text-primary text-lg font-bold mb-3">Description</Text>
+                        <Text className="text-text-secondary text-base leading-6">{product.description}</Text>
+                    </View>
                 </View>
-                {/* Description */}
-                <View className="mb-8">
-                    <Text className="text-text-primary text-lg font-bold mb-3">Description</Text>
-                    <Text className="text-text-secondary text-base leading-6">{product.description}</Text>
-                </View>
-
             </ScrollView>
             {/* Bottom Action Bar */}
             <View className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-surface px-6 py-4 pb-8">
