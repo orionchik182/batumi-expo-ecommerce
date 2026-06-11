@@ -14,3 +14,24 @@ export interface Cart {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CartSummary {
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+}
+
+export interface CartItemAddInput {
+  productId: string;
+  quantity?: number;
+}
+
+export interface CartItemUpdateInput {
+  productId: string;
+  quantity: number;
+}
+
+export interface CartItemRemoveInput {
+  productId: string;
+}

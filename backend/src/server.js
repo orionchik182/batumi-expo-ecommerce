@@ -16,10 +16,14 @@ import orderRoutes from "./routes/order.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
+import paymentRoutes from "./routes/payment.route.js";
 
 const app = express();
 
 const __dirname = path.resolve();
+
+// special handling: Stripe webhook needs raw body BEFORE any body parsing middleware
+// apply raw body parser conditionally to webhook endpoint
 
 // === 1. ВЕБХУК CLERK ===
 app.post(
@@ -69,6 +73,18 @@ app.post(
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+);
+
+app.use(
+  "/api/payment",
+  (req, res, next) => {
+    if (req.originalUrl === "/api/payment/webhook") {
+      express.raw({ type: "application/json" })(req, res, next);
+    } else {
+      express.json()(req, res, next); // parse json for non-webhook routes
+    }
+  },
+  paymentRoutes,
 );
 
 // === 2. БАЗОВЫЕ НАСТРОЙКИ ===
