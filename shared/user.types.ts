@@ -23,7 +23,14 @@ export interface Address {
   isDefault: boolean;
 }
 
-export interface AddressFormData extends Omit<Address, "_id"> { }
+export interface AddressSelectionModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onProceed: (address: Address) => void;
+  isProcessing: boolean;
+}
+
+export interface AddressFormData extends Omit<Address, "_id"> {}
 
 export interface AddressFormModalProps {
   visible: boolean;

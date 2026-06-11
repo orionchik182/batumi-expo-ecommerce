@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Sentry from "@sentry/react-native";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN!,
@@ -75,13 +76,17 @@ export default Sentry.wrap(function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
         <QueryClientProvider client={queryClient}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              gestureEnabled: true,
-              animation: "slide_from_right",
-            }}
-          />
+          <StripeProvider
+            publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+          >
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                gestureEnabled: true,
+                animation: "slide_from_right",
+              }}
+            />
+          </StripeProvider>
         </QueryClientProvider>
       </ClerkProvider>
     </GestureHandlerRootView>

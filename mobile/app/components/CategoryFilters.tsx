@@ -17,7 +17,7 @@ const CategoryFilters = ({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
       >
-        {CATEGORIES.map((category, index) => {
+        {CATEGORIES.map((category: any, index) => {
           const isSelected = selectedCategory === category.name;
           return (
             <TouchableOpacity
