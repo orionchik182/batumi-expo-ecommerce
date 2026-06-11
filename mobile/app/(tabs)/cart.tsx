@@ -182,7 +182,7 @@ const CartScreen = () => {
           itemCount: cartItems.length,
         });
         Alert.alert("Payment successful", "Your order is being processed");
-        clearCart();
+        await clearCart();
       }
     } catch (error) {
       Sentry.logger.error("Payment placement failed", {

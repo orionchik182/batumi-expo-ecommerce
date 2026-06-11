@@ -71,14 +71,18 @@ if (!publishableKey) {
   throw new Error("Add your Clerk Publishable Key to the .env file");
 }
 
+const stripePublishableKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
+
+if (!stripePublishableKey) {
+  throw new Error("Add your Stripe Publishable Key to the .env file");
+}
+
 export default Sentry.wrap(function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
         <QueryClientProvider client={queryClient}>
-          <StripeProvider
-            publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
-          >
+          <StripeProvider publishableKey={stripePublishableKey}>
             <Stack
               screenOptions={{
                 headerShown: false,

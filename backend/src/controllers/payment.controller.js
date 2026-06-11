@@ -38,7 +38,7 @@ export async function createPaymentIntent(req, res) {
       validatedItems.push({
         product: product._id.toString(),
         name: product.name,
-        image: product.images[0],
+        image: product.images?.[0] || "",
         quantity: item.quantity,
         price: product.price,
       });
@@ -54,13 +54,33 @@ export async function createPaymentIntent(req, res) {
         .json({ error: "Total amount must be greater than 0" });
     }
 
-    // find or create stripe customer
+    // --- НАЧАЛО БЛОКА: ПОИСК ИЛИ СОЗДАНИЕ STRIPE CUSTOMER ---
     let customer;
-    if (user.stripeCustomerId) {
-      // find the customer
-      customer = await stripe.customers.retrieve(user.stripeCustomerId);
-    } else {
-      // create the customer
+    let shouldCreateCustomer = !user.stripeCustomerId;
+
+    if (user.stripeCustomerId !== null) {
+      try {
+        const retrievedCustomer = await stripe.customers.retrieve(
+          user.stripeCustomerId,
+        );
+        if (retrievedCustomer.deleted) {
+          shouldCreateCustomer = true;
+        } else {
+          customer = retrievedCustomer;
+        }
+      } catch (err) {
+        const isMissing =
+          err.statusCode === 404 || err.code === "resource_missing";
+        if (isMissing) {
+          shouldCreateCustomer = true;
+        } else {
+          throw err; // Пробрасываем сетевые ошибки в глобальный catch
+        }
+      }
+    }
+
+    // Этот блок теперь стоит СНАРУЖИ условия, чтобы сработать и для абсолютно новых пользователей
+    if (shouldCreateCustomer) {
       customer = await stripe.customers.create({
         email: user.email,
         name: user.name,
@@ -73,6 +93,7 @@ export async function createPaymentIntent(req, res) {
         stripeCustomerId: customer.id,
       });
     }
+    // --- КОНЕЦ БЛОКА ---
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(total * 100), // convert to cents
@@ -88,8 +109,8 @@ export async function createPaymentIntent(req, res) {
         shippingAddress: JSON.stringify(shippingAddress),
         totalPrice: total.toFixed(2),
       },
-      // in the webhooks section we will use this metadata
     });
+
     res.status(200).json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error("Payment Intent Creation Error:", error);
@@ -124,6 +145,20 @@ export async function handleStripeWebhook(req, res) {
       const { clerkId, userId, orderItems, shippingAddress, totalPrice } =
         paymentIntent.metadata;
 
+      // 1. Безопасный парсинг метаданных
+      let parsedOrderItems, parsedShippingAddress;
+      try {
+        parsedOrderItems = JSON.parse(orderItems);
+        parsedShippingAddress = JSON.parse(shippingAddress);
+      } catch (parseErr) {
+        console.error(
+          "Критическая ошибка: Не удалось распарсить metadata в вебхуке:",
+          parseErr,
+        );
+        console.error("Содержимое orderItems:", orderItems);
+        return res.status(400).send("Invalid metadata structure");
+      }
+
       // Check if order already exists (prevent duplicates)
       const existingOrder = await Order.findOne({
         "paymentResult.id": paymentIntent.id,
@@ -133,12 +168,12 @@ export async function handleStripeWebhook(req, res) {
         return res.json({ received: true });
       }
 
-      // create order
+      // create order (Используем уже готовые распарсенные объекты)
       const order = await Order.create({
         user: userId,
         clerkId,
-        orderItems: JSON.parse(orderItems),
-        shippingAddress: JSON.parse(shippingAddress),
+        orderItems: parsedOrderItems,
+        shippingAddress: parsedShippingAddress,
         paymentResult: {
           id: paymentIntent.id,
           status: "succeeded",
@@ -147,8 +182,7 @@ export async function handleStripeWebhook(req, res) {
       });
 
       // update product stock
-      const items = JSON.parse(orderItems);
-      for (const item of items) {
+      for (const item of parsedOrderItems) {
         await Product.findByIdAndUpdate(item.product, {
           $inc: { stock: -item.quantity },
         });
