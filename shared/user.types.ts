@@ -52,3 +52,10 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateReviewData {
+  productId: string;
+  rating: number;
+  orderId: string;
+  comment?: string;
+}

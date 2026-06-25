@@ -58,7 +58,7 @@ export async function createPaymentIntent(req, res) {
     let customer;
     let shouldCreateCustomer = !user.stripeCustomerId;
 
-    if (user.stripeCustomerId !== null) {
+    if (user.stripeCustomerId) {
       try {
         const retrievedCustomer = await stripe.customers.retrieve(
           user.stripeCustomerId,
@@ -151,11 +151,8 @@ export async function handleStripeWebhook(req, res) {
         parsedOrderItems = JSON.parse(orderItems);
         parsedShippingAddress = JSON.parse(shippingAddress);
       } catch (parseErr) {
-        console.error(
-          "Критическая ошибка: Не удалось распарсить metadata в вебхуке:",
-          parseErr,
-        );
-        console.error("Содержимое orderItems:", orderItems);
+        console.error("Error parsing metadata in webhook:", parseErr);
+        console.error("orderItems:", orderItems);
         return res.status(400).send("Invalid metadata structure");
       }
 

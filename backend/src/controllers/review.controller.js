@@ -42,28 +42,14 @@ export async function createReview(req, res) {
       return res.status(400).json({ message: "Product not found in order" });
     }
 
-    // check if review already exists for this product and order
-    const existingReview = await Review.findOne({
-      productId: productId.toString(),
-      orderId: orderId.toString(),
-      userId: user._id.toString(),
-    });
-
-    if (existingReview) {
-      return res
-        .status(400)
-        .json({ message: "Review already exists for this product and order" });
-    }
-
-    const review = await Review.create({
-      userId: user._id,
-      productId,
-      rating,
-      orderId,
-    });
+    const review = await Review.findOneAndUpdate(
+      { productId, orderId, userId: user._id },
+      { rating },
+      { new: true, upsert: true, runValidators: true },
+    );
 
     // update product rating
-    
+
     const reviews = await Review.find({ productId: productId.toString() });
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -78,6 +64,25 @@ export async function createReview(req, res) {
     if (!updatedProduct) {
       await Review.findByIdAndDelete(review._id);
       return res.status(404).json({ message: "Product not found" });
+    }
+
+    // update order review status if all products in this order have been reviewed
+    const orderProductIds = [
+      ...new Set(order.orderItems.map((item) => item.product._id.toString())),
+    ];
+    const reviewedProductIds = new Set(
+      (
+        await Review.distinct("productId", {
+          orderId: order._id,
+          productId: { $in: orderProductIds },
+        })
+      ).map((id) => id.toString()),
+    );
+    if (orderProductIds.every((id) => reviewedProductIds.has(id))) {
+      order.hasReviewed = true;
+      order.reviewedAt = new Date();
+      order.reviewId = review._id;
+      await order.save();
     }
 
     return res.status(201).json({
@@ -107,6 +112,62 @@ export async function deleteReview(req, res) {
     }
 
     await review.deleteOne();
+
+    // Check if there are any remaining reviews for this order
+    const remainingReviewsCount = await Review.countDocuments({
+      orderId: review.orderId,
+    });
+
+    const order = await Order.findById(review.orderId);
+    if (order) {
+      const orderProductIds = [
+        ...new Set(order.orderItems.map((item) => item.product._id.toString())),
+      ];
+      const reviewedProductIds = new Set(
+        (
+          await Review.distinct("productId", {
+            orderId: order._id,
+            productId: { $in: orderProductIds },
+          })
+        ).map((id) => id.toString()),
+      );
+
+      const isFullyReviewed = orderProductIds.every((id) =>
+        reviewedProductIds.has(id),
+      );
+
+      if (!isFullyReviewed) {
+        const updateDoc = {
+          hasReviewed: false,
+        };
+        const unsetDoc = { reviewedAt: "" };
+
+        if (remainingReviewsCount > 0) {
+          const anotherReview = await Review.findOne({
+            orderId: review.orderId,
+          });
+          if (anotherReview) {
+            updateDoc.reviewId = anotherReview._id;
+          } else {
+            unsetDoc.reviewId = "";
+          }
+        } else {
+          unsetDoc.reviewId = "";
+        }
+
+        await Order.findByIdAndUpdate(review.orderId, {
+          $set: updateDoc,
+          $unset: unsetDoc,
+        });
+      } else {
+        const anotherReview = await Review.findOne({ orderId: review.orderId });
+        if (anotherReview) {
+          await Order.findByIdAndUpdate(review.orderId, {
+            reviewId: anotherReview._id,
+          });
+        }
+      }
+    }
 
     // update product rating
     const product = await Product.findById(review.productId);
