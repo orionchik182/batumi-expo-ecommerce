@@ -6,11 +6,14 @@ import { useAuth, useUser } from "@clerk/expo";
 import { MENU_ITEMS } from "@/constants/menuItems";
 import { useRouter } from "expo-router";
 import { ScrollView } from "react-native-gesture-handler";
+import { useOrders } from "@/hooks/useOrders";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const ProfileScreen = () => {
   const { signOut } = useAuth();
   const { user } = useUser();
+  const { data: orders } = useOrders();
+  const ordersCount = orders?.length || 0;
 
   const router = useRouter();
   const handleMenuPress = (action: (typeof MENU_ITEMS)[number]["action"]) => {
@@ -66,10 +69,21 @@ const ProfileScreen = () => {
               activeOpacity={0.7}
             >
               <View
-                className="items-center justify-center mb-4 size-16 rounded-full"
+                className="items-center justify-center mb-4 size-16 rounded-full relative"
                 style={{ backgroundColor: item.color + "20" }}
               >
                 <Ionicons name={item.icon} size={28} color={item.color} />
+                {item.action === "/orders" && ordersCount > 0 && (
+                  <View
+                    className={`absolute -top-1 -right-1 bg-primary rounded-full items-center justify-center border-2 border-surface ${
+                      ordersCount > 9 ? "px-1.5 h-6 min-w-[24px]" : "size-6"
+                    }`}
+                  >
+                    <Text className="text-background text-[10px] font-bold">
+                      {ordersCount}
+                    </Text>
+                  </View>
+                )}
               </View>
               <Text className="text-text-primary text-base font-bold">
                 {item.title}

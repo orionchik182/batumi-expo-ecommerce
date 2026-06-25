@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Redirect, Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useAuth } from "@clerk/expo";
+import useCart from "../../hooks/useCart";
 import { ActivityIndicator, StyleSheet, Platform, View, TouchableOpacity, Text } from "react-native";
 import { useSafeAreaInsets, EdgeInsets } from "react-native-safe-area-context";
 import { GlassView } from 'expo-glass-effect';
@@ -11,6 +12,7 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 type CustomTabBarProps = BottomTabBarProps & { insets: EdgeInsets };
 
 function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarProps) {
+  const { cartItemCount } = useCart();
   const [tabBarWidth, setTabBarWidth] = useState(0);
   const paddingHorizontal = 8;
   const tabWidth = (tabBarWidth - paddingHorizontal * 2) / state.routes.length;
@@ -92,8 +94,38 @@ function CustomTabBar({ state, descriptors, navigation, insets }: CustomTabBarPr
               onPress={onPress}
               style={styles.tabButton}
             >
-              {options.tabBarIcon &&
-                options.tabBarIcon({ color, size: 20, focused: isFocused })}
+              <View style={{ position: "relative" }}>
+                {options.tabBarIcon &&
+                  options.tabBarIcon({ color, size: 20, focused: isFocused })}
+                {route.name === "cart" && cartItemCount > 0 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: -10,
+                      top: -6,
+                      backgroundColor: "#1DB954",
+                      borderRadius: 9,
+                      height: 18,
+                      minWidth: 18,
+                      width: cartItemCount > 9 ? undefined : 18,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingHorizontal: cartItemCount > 9 ? 4 : 0,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#121212",
+                        fontSize: 9,
+                        fontWeight: "bold",
+                        lineHeight: 12,
+                      }}
+                    >
+                      {cartItemCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
               <Text
                 style={{
                   color,
