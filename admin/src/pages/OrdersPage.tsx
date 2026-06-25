@@ -21,6 +21,14 @@ function OrdersPage() {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
     },
+    onError: (error: any) => {
+      console.error("Error updating status:", error);
+      alert(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to update status",
+      );
+    },
   });
 
   const handleStatusChange = (orderId: string, newStatus: string) => {

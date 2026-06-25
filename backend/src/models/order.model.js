@@ -112,6 +112,17 @@ const orderSchema = new mongoose.Schema(
     cancelledAt: {
       type: Date,
     },
+    hasReviewed: {
+      type: Boolean,
+      default: false,
+    },
+    reviewedAt: {
+      type: Date,
+    },
+    reviewId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    },
   },
   { timestamps: true },
 );

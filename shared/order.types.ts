@@ -33,6 +33,7 @@ export interface Order {
   shippingAddress: ShippingAddress;
   paymentResult?: PaymentResult;
   totalPrice: number;
+  hasReviewed: boolean;
   status: "pending" | "shipped" | "delivered" | "cancelled";
   deliveredAt?: string;
   paidAt?: string;

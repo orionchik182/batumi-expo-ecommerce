@@ -74,9 +74,11 @@ export async function getUserOrders(req, res) {
 
     const ordersWithReviewStatus = await Promise.all(
       orders.map(async (order) => {
+        const hasReviewed = order.hasReviewed || reviewedOrderIds.has(order._id.toString());
         return {
           ...order.toObject(),
-          hasReview: reviewedOrderIds.has(order._id.toString()),
+          hasReviewed,
+          hasReview: hasReviewed, // for backwards compatibility
         };
       }),
     );

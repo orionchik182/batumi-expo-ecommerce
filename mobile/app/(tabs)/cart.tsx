@@ -182,15 +182,20 @@ const CartScreen = () => {
           itemCount: cartItems.length,
         });
         Alert.alert("Payment successful", "Your order is being processed");
-        await clearCart();
+        clearCart();
       }
-    } catch (error) {
+    } catch (error: any) {
       Sentry.logger.error("Payment placement failed", {
         error: error instanceof Error ? error.message : "Unknown error",
         cartTotal: total,
         itemCount: cartItems.length,
       });
-      Alert.alert("Error", "Failed to place order");
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to place order";
+      Alert.alert("Error", errorMessage);
     } finally {
       setPaymentLoading(false);
     }
@@ -200,7 +205,14 @@ const CartScreen = () => {
 
   if (isError) return <ErrorUI error={error} title="Failed to load cart" />;
 
-  if (cartItems.length === 0) return <EmptyUI />;
+  if (cartItems.length === 0)
+    return (
+      <EmptyUI
+        title="Cart"
+        description="Your cart is empty"
+        actionTitle="Start Shopping"
+      />
+    );
 
   return (
     <SafeScreen>
