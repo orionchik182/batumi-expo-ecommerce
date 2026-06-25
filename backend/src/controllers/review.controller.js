@@ -67,10 +67,18 @@ export async function createReview(req, res) {
     }
 
     // update order review status if all products in this order have been reviewed
-    const reviewedProductsCount = await Review.countDocuments({
-      orderId: order._id,
-    });
-    if (reviewedProductsCount >= order.orderItems.length) {
+    const orderProductIds = [
+      ...new Set(order.orderItems.map((item) => item.product._id.toString())),
+    ];
+    const reviewedProductIds = new Set(
+      (
+        await Review.distinct("productId", {
+          orderId: order._id,
+          productId: { $in: orderProductIds },
+        })
+      ).map((id) => id.toString()),
+    );
+    if (orderProductIds.every((id) => reviewedProductIds.has(id))) {
       order.hasReviewed = true;
       order.reviewedAt = new Date();
       order.reviewId = review._id;
@@ -112,14 +120,32 @@ export async function deleteReview(req, res) {
 
     const order = await Order.findById(review.orderId);
     if (order) {
-      if (remainingReviewsCount < order.orderItems.length) {
+      const orderProductIds = [
+        ...new Set(order.orderItems.map((item) => item.product._id.toString())),
+      ];
+      const reviewedProductIds = new Set(
+        (
+          await Review.distinct("productId", {
+            orderId: order._id,
+            productId: { $in: orderProductIds },
+          })
+        ).map((id) => id.toString()),
+      );
+
+      const isFullyReviewed = orderProductIds.every((id) =>
+        reviewedProductIds.has(id),
+      );
+
+      if (!isFullyReviewed) {
         const updateDoc = {
           hasReviewed: false,
         };
         const unsetDoc = { reviewedAt: "" };
 
         if (remainingReviewsCount > 0) {
-          const anotherReview = await Review.findOne({ orderId: review.orderId });
+          const anotherReview = await Review.findOne({
+            orderId: review.orderId,
+          });
           if (anotherReview) {
             updateDoc.reviewId = anotherReview._id;
           } else {

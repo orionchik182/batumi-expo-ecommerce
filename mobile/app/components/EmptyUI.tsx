@@ -12,7 +12,7 @@ const EmptyUI = ({
 }: {
   title: string;
   description: string;
-  actionTitle: string;
+  actionTitle?: string;
   actionPath?: string;
   icon?: ComponentProps<typeof Ionicons>["name"];
 }) => {
@@ -28,14 +28,20 @@ const EmptyUI = ({
         <Text className="text-text-primary text-xl mt-4 font-semibold">
           {description}
         </Text>
-        <TouchableOpacity
-          className="bg-primary py-3 px-6 rounded-full mt-4"
-          onPress={() => router.push((actionPath as any) || "/")}
-        >
-          <Text className="text-white text-lg font-semibold">
+        {actionTitle && actionPath ? (
+          <TouchableOpacity
+            className="bg-primary py-3 px-6 rounded-full mt-4"
+            onPress={() => router.push(actionPath as any)}
+          >
+            <Text className="text-white text-lg font-semibold">
+              {actionTitle}
+            </Text>
+          </TouchableOpacity>
+        ) : actionTitle ? (
+          <Text className="text-text-secondary text-base mt-2 text-center">
             {actionTitle}
           </Text>
-        </TouchableOpacity>
+        ) : null}
       </View>
     </View>
   );

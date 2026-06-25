@@ -181,7 +181,18 @@ const CartScreen = () => {
           total: total.toFixed(2),
           itemCount: cartItems.length,
         });
-        await clearCart();
+        try {
+          await clearCart();
+        } catch (clearError) {
+          Sentry.logger.error("Cart clear failed after payment success", {
+            error:
+              clearError instanceof Error
+                ? clearError.message
+                : "Unknown error",
+            cartId: cart?._id,
+            itemCount: cartItems.length,
+          });
+        }
         Alert.alert("Payment successful", "Your order is being processed");
       }
     } catch (error: any) {
@@ -212,6 +223,7 @@ const CartScreen = () => {
         description="Your cart is empty"
         actionTitle="Start Shopping"
         icon="cart-outline"
+        actionPath="/"
       />
     );
 
