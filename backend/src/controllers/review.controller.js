@@ -42,30 +42,11 @@ export async function createReview(req, res) {
       return res.status(400).json({ message: "Product not found in order" });
     }
 
-    let review;
-
-    // check if review already exists for this product and order
-    const existingReview = await Review.findOne({
-      productId: productId.toString(),
-      orderId: orderId.toString(),
-      userId: user._id.toString(),
-    });
-
-    if (existingReview) {
-      existingReview.rating = rating;
-      existingReview.orderId = orderId;
-      review = await existingReview.save();
-    } else {
-      {
-        /* create a new review */
-      }
-      review = await Review.create({
-        userId: user._id,
-        productId,
-        rating,
-        orderId,
-      });
-    }
+    const review = await Review.findOneAndUpdate(
+      { productId, orderId, userId: user._id },
+      { rating },
+      { new: true, upsert: true, runValidators: true },
+    );
 
     // update product rating
 
@@ -85,11 +66,16 @@ export async function createReview(req, res) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // update order review status
-    order.hasReviewed = true;
-    order.reviewedAt = new Date();
-    order.reviewId = review._id;
-    await order.save();
+    // update order review status if all products in this order have been reviewed
+    const reviewedProductsCount = await Review.countDocuments({
+      orderId: order._id,
+    });
+    if (reviewedProductsCount >= order.orderItems.length) {
+      order.hasReviewed = true;
+      order.reviewedAt = new Date();
+      order.reviewId = review._id;
+      await order.save();
+    }
 
     return res.status(201).json({
       message: "Review created successfully",
@@ -124,17 +110,36 @@ export async function deleteReview(req, res) {
       orderId: review.orderId,
     });
 
-    if (remainingReviewsCount === 0) {
-      await Order.findByIdAndUpdate(review.orderId, {
-        hasReviewed: false,
-        $unset: { reviewedAt: "", reviewId: "" },
-      });
-    } else {
-      const anotherReview = await Review.findOne({ orderId: review.orderId });
-      if (anotherReview) {
+    const order = await Order.findById(review.orderId);
+    if (order) {
+      if (remainingReviewsCount < order.orderItems.length) {
+        const updateDoc = {
+          hasReviewed: false,
+        };
+        const unsetDoc = { reviewedAt: "" };
+
+        if (remainingReviewsCount > 0) {
+          const anotherReview = await Review.findOne({ orderId: review.orderId });
+          if (anotherReview) {
+            updateDoc.reviewId = anotherReview._id;
+          } else {
+            unsetDoc.reviewId = "";
+          }
+        } else {
+          unsetDoc.reviewId = "";
+        }
+
         await Order.findByIdAndUpdate(review.orderId, {
-          reviewId: anotherReview._id,
+          $set: updateDoc,
+          $unset: unsetDoc,
         });
+      } else {
+        const anotherReview = await Review.findOne({ orderId: review.orderId });
+        if (anotherReview) {
+          await Order.findByIdAndUpdate(review.orderId, {
+            reviewId: anotherReview._id,
+          });
+        }
       }
     }
 

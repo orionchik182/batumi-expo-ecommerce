@@ -103,6 +103,11 @@ const RatingModal: React.FC<RatingModalProps> = ({
                             onPress={() => onRatingChange(productId, star)}
                             activeOpacity={0.7}
                             className="mx-1.5"
+                            accessibilityRole="button"
+                            accessibilityLabel={`Rate ${item.name} ${star} star${star === 1 ? "" : "s"}`}
+                            accessibilityState={{
+                              selected: star <= currentRating,
+                            }}
                           >
                             <Ionicons
                               name={

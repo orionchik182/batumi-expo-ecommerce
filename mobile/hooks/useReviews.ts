@@ -16,9 +16,6 @@ export const useReviews = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: () => {
-      Alert.alert("Error", "Failed to create review");
-    },
   });
   return {
     isCreatingReview: createReview.isPending,

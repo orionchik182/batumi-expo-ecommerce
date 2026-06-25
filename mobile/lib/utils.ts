@@ -20,6 +20,6 @@ export const getStatusColor = (status: string) => {
     case "pending":
       return "#F59E0B";
     default:
-      return "#666";
+      return "#666666";
   }
 };

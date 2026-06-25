@@ -46,13 +46,13 @@ const OrdersScreen = () => {
     }
     try {
       await Promise.all(
-        selectedOrder.orderItems.map((item) => {
+        selectedOrder.orderItems.map((item) =>
           createReviewAsync({
             productId: item.product._id,
             orderId: selectedOrder._id,
             rating: productRating[item.product._id],
-          });
-        }),
+          })
+        ),
       );
       Alert.alert("Success", "Thank you for rating all products!");
       setShowRatingModal(false);

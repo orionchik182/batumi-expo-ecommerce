@@ -181,8 +181,8 @@ const CartScreen = () => {
           total: total.toFixed(2),
           itemCount: cartItems.length,
         });
+        await clearCart();
         Alert.alert("Payment successful", "Your order is being processed");
-        clearCart();
       }
     } catch (error: any) {
       Sentry.logger.error("Payment placement failed", {
@@ -211,6 +211,7 @@ const CartScreen = () => {
         title="Cart"
         description="Your cart is empty"
         actionTitle="Start Shopping"
+        icon="cart-outline"
       />
     );
 

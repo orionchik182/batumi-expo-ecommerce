@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { ComponentProps } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 
@@ -8,11 +8,13 @@ const EmptyUI = ({
   description,
   actionTitle,
   actionPath,
+  icon = "cart-outline",
 }: {
   title: string;
   description: string;
   actionTitle: string;
   actionPath?: string;
+  icon?: ComponentProps<typeof Ionicons>["name"];
 }) => {
   return (
     <View className="flex-1 bg-background">
@@ -22,7 +24,7 @@ const EmptyUI = ({
         </Text>
       </View>
       <View className="flex-1 items-center justify-center px-6">
-        <Ionicons name="cart-outline" size={80} color={"#666"} />
+        <Ionicons name={icon} size={80} color={"#666"} />
         <Text className="text-text-primary text-xl mt-4 font-semibold">
           {description}
         </Text>
